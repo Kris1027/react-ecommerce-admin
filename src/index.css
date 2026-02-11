@@ -1,6 +1,6 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -123,12 +123,12 @@
   }
   button,
   a,
-  [role="button"],
+  [role='button'],
   select,
   summary,
-  [type="button"],
-  [type="submit"],
-  [type="reset"] {
+  [type='button'],
+  [type='submit'],
+  [type='reset'] {
     cursor: pointer;
   }
 }
