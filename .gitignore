@@ -1,3 +1,6 @@
+# Tanstack Router generated route tree
+routeTree.gen.ts
+
 # Dependencies
 node_modules
 
@@ -44,4 +47,5 @@ playwright-report
 *.local
 
 # Project docs (private)
-implementation-docs/
+implementation-docs
+.claude
