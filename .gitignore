@@ -1,5 +1,8 @@
-# Tanstack Router generated route tree
+# TanStack Router generated route tree
 routeTree.gen.ts
+
+# TanStack Router temp files
+.tanstack
 
 # Dependencies
 node_modules
@@ -49,3 +52,6 @@ playwright-report
 # Project docs (private)
 implementation-docs
 .claude
+
+# OpenAPI generated client
+src/api/generated
