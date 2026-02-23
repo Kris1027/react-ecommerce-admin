@@ -101,6 +101,11 @@ export const getProfile = async (): Promise<void> => {
 
   const user = profileResponse.data;
 
+  if (user.role !== 'ADMIN') {
+    useAuthStore.getState().clearAuth();
+    throw new AdminRoleError();
+  }
+
   const { accessToken, refreshToken } = useAuthStore.getState();
   if (accessToken && refreshToken) {
     useAuthStore.getState().setAuth(accessToken, refreshToken, user);

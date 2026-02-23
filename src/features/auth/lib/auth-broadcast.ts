@@ -7,6 +7,8 @@ type AuthBroadcastMessage =
 let channel: BroadcastChannel | null = null;
 
 export const initAuthBroadcast = () => {
+  if (typeof BroadcastChannel === 'undefined') return;
+
   channel = new BroadcastChannel('auth');
 
   channel.onmessage = (event: MessageEvent<AuthBroadcastMessage>) => {

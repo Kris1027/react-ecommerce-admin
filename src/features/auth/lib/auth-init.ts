@@ -20,10 +20,14 @@ export const initAuth = async (): Promise<void> => {
   setupPersistence();
   initAuthBroadcast();
 
-  const storedToken = sessionStorage.getItem(REFRESH_TOKEN_KEY);
-  if (!storedToken) return;
-  const success = await refresh(storedToken);
-  if (!success) {
+  try {
+    const storedToken = sessionStorage.getItem(REFRESH_TOKEN_KEY);
+    if (!storedToken) return;
+    const success = await refresh(storedToken);
+    if (!success) {
+      sessionStorage.removeItem(REFRESH_TOKEN_KEY);
+    }
+  } catch {
     sessionStorage.removeItem(REFRESH_TOKEN_KEY);
   }
 };
