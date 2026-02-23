@@ -15,13 +15,17 @@ import { Label } from '@/components/ui/label';
 import { AdminRoleError, login } from '../api/auth.api';
 
 const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
+  email: z.email('Please enter a valid email address'),
   password: z.string().min(1, 'Password is required'),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-export const LoginForm = () => {
+type LoginFormProps = {
+  redirectTo?: string;
+};
+
+export const LoginForm = ({ redirectTo }: LoginFormProps) => {
   const navigate = useNavigate();
 
   const {
@@ -40,7 +44,7 @@ export const LoginForm = () => {
   const handleLogin = async (data: LoginFormData) => {
     try {
       await login(data.email, data.password);
-      await navigate({ to: '/' });
+      await navigate({ to: redirectTo ?? '/' });
     } catch (error) {
       if (error instanceof AdminRoleError) {
         setError('root', { message: error.message });
