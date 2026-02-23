@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "api:generate": "openapi-ts"
+    "api:generate": "openapi-ts",
+    "pre-commit": "prettier --write . && eslint . --fix && tsc -b && vite build"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.21",
