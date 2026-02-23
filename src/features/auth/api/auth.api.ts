@@ -5,6 +5,7 @@ import {
   usersControllerGetProfile,
 } from '@/api/generated';
 import { useAuthStore } from '@/stores/auth.store';
+import { broadcastLogout, broadcastTokenRefresh } from '../lib/auth-broadcast';
 
 export class AdminRoleError extends Error {
   constructor() {
@@ -64,6 +65,7 @@ export const refresh = async (): Promise<boolean> => {
     }
 
     useAuthStore.getState().setAuth(newAccessToken, newRefreshToken, user);
+    broadcastTokenRefresh(newAccessToken, newRefreshToken);
     return true;
   } catch {
     useAuthStore.getState().clearAuth();
@@ -75,6 +77,7 @@ export const logout = async (): Promise<void> => {
   const refreshToken = useAuthStore.getState().refreshToken;
 
   useAuthStore.getState().clearAuth();
+  broadcastLogout();
 
   if (refreshToken) {
     try {
