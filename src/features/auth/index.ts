@@ -7,3 +7,4 @@ export {
   AdminRoleError,
 } from './api/auth.api';
 export { initAuthBroadcast, closeAuthBroadcast } from './lib/auth-broadcast';
+export { initAuth } from './lib/auth-init';

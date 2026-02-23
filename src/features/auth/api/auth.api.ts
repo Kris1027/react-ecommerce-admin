@@ -38,8 +38,11 @@ export const login = async (email: string, password: string): Promise<void> => {
   useAuthStore.getState().setAuth(accessToken, refreshToken, user);
 };
 
-export const refresh = async (): Promise<boolean> => {
-  const refreshToken = useAuthStore.getState().refreshToken;
+export const refresh = async (
+  storedRefreshToken?: string,
+): Promise<boolean> => {
+  const refreshToken =
+    storedRefreshToken ?? useAuthStore.getState().refreshToken;
 
   if (!refreshToken) return false;
 
