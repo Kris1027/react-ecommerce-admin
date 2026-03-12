@@ -52,6 +52,7 @@ playwright-report
 # Project docs (private)
 implementation-docs
 .claude
+CLAUDE.md
 
 # OpenAPI generated client
 src/api/generated
