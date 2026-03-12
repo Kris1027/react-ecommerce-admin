@@ -1,18 +1,6 @@
 import { getIsAuthenticated } from '@/stores/auth.store';
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
-
-const AuthenticatedLayout = () => {
-  return (
-    <div>
-      <p className="bg-muted p-2 text-sm">
-        [Authenticated Layout — sidebar + header go here]
-      </p>
-      <main>
-        <Outlet />
-      </main>
-    </div>
-  );
-};
+import { createFileRoute, redirect } from '@tanstack/react-router';
+import { AppLayout } from '@/components/layout/app-layout';
 
 export const Route = createFileRoute('/_authenticated')({
   beforeLoad: ({ location }) => {
@@ -25,5 +13,5 @@ export const Route = createFileRoute('/_authenticated')({
       });
     }
   },
-  component: AuthenticatedLayout,
+  component: AppLayout,
 });
