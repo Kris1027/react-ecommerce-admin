@@ -54,6 +54,5 @@ implementation-docs
 .claude
 CLAUDE.md
 
-# OpenAPI generated client — tracked in git for CI builds
-# (generator requires live backend, unavailable in CI)
-# src/api/generated
+# OpenAPI generated client
+src/api/generated
