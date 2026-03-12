@@ -1,6 +1,7 @@
 import { useNavigate } from '@tanstack/react-router';
-import { LogOut, Menu, User } from 'lucide-react';
+import { LogOut, Menu, Monitor, Moon, Sun, User } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth.store';
+import { useThemeStore } from '@/stores/theme.store';
 import { logout } from '@/features/auth/api/auth.api';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,6 +10,9 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -20,6 +24,7 @@ type HeaderProps = {
 export const Header = ({ onMobileMenuToggle }: HeaderProps) => {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
+  const { theme, setTheme } = useThemeStore();
 
   const initials =
     user?.firstName && user?.lastName
@@ -38,7 +43,6 @@ export const Header = ({ onMobileMenuToggle }: HeaderProps) => {
 
   return (
     <header className="bg-background flex h-14 items-center justify-between border-b px-4">
-      {/* Left side — mobile menu button */}
       <div className="flex items-center gap-2">
         <Button
           variant="ghost"
@@ -50,7 +54,6 @@ export const Header = ({ onMobileMenuToggle }: HeaderProps) => {
         </Button>
       </div>
 
-      {/* Right side — user dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="flex items-center gap-2">
@@ -71,6 +74,34 @@ export const Header = ({ onMobileMenuToggle }: HeaderProps) => {
             <User size={16} />
             <span>Profile</span>
           </DropdownMenuItem>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <Sun size={16} className="dark:hidden" />
+              <Moon size={16} className="hidden dark:block" />
+              <span>Theme</span>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem onClick={() => setTheme('light')}>
+                <Sun size={16} />
+                <span>Light</span>
+                {theme === 'light' && (
+                  <span className="ml-auto text-xs">✓</span>
+                )}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme('dark')}>
+                <Moon size={16} />
+                <span>Dark</span>
+                {theme === 'dark' && <span className="ml-auto text-xs">✓</span>}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme('system')}>
+                <Monitor size={16} />
+                <span>System</span>
+                {theme === 'system' && (
+                  <span className="ml-auto text-xs">✓</span>
+                )}
+              </DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleLogout}>
             <LogOut size={16} />
