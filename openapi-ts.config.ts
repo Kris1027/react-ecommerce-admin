@@ -1,9 +1,7 @@
 import { defineConfig } from '@hey-api/openapi-ts';
 
 export default defineConfig({
-  input: process.env.API_URL
-    ? `${process.env.API_URL}/docs-json`
-    : 'http://localhost:3000/docs-json',
+  input: './src/api/openapi.json',
   output: 'src/api/generated',
   plugins: [
     '@hey-api/client-fetch',
