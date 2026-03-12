@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -36,7 +39,7 @@ jobs:
           node-version-file: '.node-version'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
-      - run: pnpm dlx @tanstack/router-cli generate
+      - run: pnpm dlx @tanstack/router-cli@1.159.11 generate
       - run: pnpm api:generate
       - run: pnpm build
 
