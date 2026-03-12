@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Link, useMatchRoute } from '@tanstack/react-router';
 import {
   Box,
@@ -24,7 +25,7 @@ import {
 
 type NavItem = {
   to: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
 };
 
@@ -129,6 +130,7 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
           size="sm"
           onClick={onToggle}
           className="w-full justify-center"
+          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           <ChevronLeft
             size={20}
@@ -150,7 +152,10 @@ type NavLinkProps = {
 
 const NavLink = ({ item, isCollapsed }: NavLinkProps) => {
   const matchRoute = useMatchRoute();
-  const isActive = matchRoute({ to: item.to, fuzzy: true });
+  const isActive =
+    item.to === '/'
+      ? matchRoute({ to: item.to })
+      : matchRoute({ to: item.to, fuzzy: true });
 
   const linkContent = (
     <Link

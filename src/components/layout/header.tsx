@@ -28,12 +28,7 @@ export const Header = ({ onMobileMenuToggle }: HeaderProps) => {
 
   const initials =
     user?.firstName && user?.lastName
-      ? `${String(user.firstName)}${String(user.lastName)}`
-          .split(' ')
-          .map((n) => n[0])
-          .join('')
-          .toUpperCase()
-          .slice(0, 2)
+      ? `${String(user.firstName)[0]}${String(user.lastName)[0]}`.toUpperCase()
       : (user?.email?.charAt(0).toUpperCase() ?? 'A');
 
   const handleLogout = async () => {
@@ -49,6 +44,7 @@ export const Header = ({ onMobileMenuToggle }: HeaderProps) => {
           size="icon"
           className="md:hidden"
           onClick={onMobileMenuToggle}
+          aria-label="Open navigation menu"
         >
           <Menu size={20} />
         </Button>
