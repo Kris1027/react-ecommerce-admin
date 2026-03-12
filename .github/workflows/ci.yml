@@ -39,7 +39,7 @@ jobs:
           node-version-file: '.node-version'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
-      - run: pnpm dlx @tanstack/router-cli@1.159.11 generate
+      - run: pnpm dlx @tanstack/router-cli@1.166.7 generate
       - run: pnpm api:generate
       - run: pnpm build
 
