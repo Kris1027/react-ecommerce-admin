@@ -30,5 +30,11 @@ export default defineConfig([
       'react-refresh/only-export-components': 'off',
     },
   },
+  {
+    files: ['src/components/shared/data-table/**/*.{ts,tsx}'],
+    rules: {
+      'react-hooks/incompatible-library': 'off',
+    },
+  },
   eslintConfigPrettier,
 ]);
