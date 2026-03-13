@@ -37,27 +37,27 @@ const DataTableToolbar = ({
   }, [localValue, onSearchChange, searchValue]);
 
   return (
-    <div className="flex items-center gap-2">
+    <div className='flex items-center gap-2'>
       {onSearchChange && (
-        <div className="relative max-w-sm flex-1">
-          <Search className="text-muted-foreground absolute top-1/2 left-2.5 size-4 -translate-y-1/2" />
+        <div className='relative max-w-sm flex-1'>
+          <Search className='text-muted-foreground absolute top-1/2 left-2.5 size-4 -translate-y-1/2' />
           <Input
             placeholder={searchPlaceholder}
             value={localValue}
             onChange={(e) => setLocalValue(e.target.value)}
-            className="pl-8"
+            className='pl-8'
           />
           {localValue && (
             <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-1/2 right-1 size-6 -translate-y-1/2"
+              variant='ghost'
+              size='icon'
+              className='absolute top-1/2 right-1 size-6 -translate-y-1/2'
               onClick={() => {
                 setLocalValue('');
                 onSearchChange('');
               }}
             >
-              <X className="size-3" />
+              <X className='size-3' />
             </Button>
           )}
         </div>

@@ -11,7 +11,7 @@ const LoginPage = () => {
   const { redirect: redirectTo } = Route.useSearch();
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className='flex min-h-screen items-center justify-center'>
       <LoginForm redirectTo={redirectTo} />
     </div>
   );

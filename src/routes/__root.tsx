@@ -27,7 +27,7 @@ const RootLayout = () => {
     <QueryClientProvider client={queryClient}>
       <Outlet />
       <ReactQueryDevtools initialIsOpen={false} />
-      <TanStackRouterDevtools position="bottom-right" />
+      <TanStackRouterDevtools position='bottom-right' />
     </QueryClientProvider>
   );
 };

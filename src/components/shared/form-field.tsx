@@ -20,19 +20,19 @@ const FormField = ({
   children,
 }: FormFieldProps) => {
   return (
-    <div className="flex flex-col gap-2">
+    <div className='flex flex-col gap-2'>
       <Label htmlFor={name}>
         {label}
-        {required && <span className="text-destructive ml-1">*</span>}
+        {required && <span className='text-destructive ml-1'>*</span>}
       </Label>
 
       {children}
 
       {description && !error && (
-        <p className="text-muted-foreground text-sm">{description}</p>
+        <p className='text-muted-foreground text-sm'>{description}</p>
       )}
 
-      {error && <p className="text-destructive text-sm">{error}</p>}
+      {error && <p className='text-destructive text-sm'>{error}</p>}
     </div>
   );
 };

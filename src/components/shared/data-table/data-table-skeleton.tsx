@@ -18,13 +18,13 @@ const DataTableSkeleton = ({
   rowCount = 10,
 }: DataTableSkeletonProps) => {
   return (
-    <div className="rounded-md border">
+    <div className='rounded-md border'>
       <Table>
         <TableHeader>
           <TableRow>
             {Array.from({ length: columnCount }, (_, i) => (
               <TableHead key={i}>
-                <Skeleton className="h-4 w-24" />
+                <Skeleton className='h-4 w-24' />
               </TableHead>
             ))}
           </TableRow>
@@ -34,7 +34,7 @@ const DataTableSkeleton = ({
             <TableRow key={i}>
               {Array.from({ length: columnCount }, (_, j) => (
                 <TableCell key={j}>
-                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className='h-4 w-full' />
                 </TableCell>
               ))}
             </TableRow>

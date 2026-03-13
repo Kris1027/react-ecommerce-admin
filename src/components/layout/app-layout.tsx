@@ -13,9 +13,9 @@ export const AppLayout = () => {
 
   return (
     <TooltipProvider>
-      <div className="flex h-screen overflow-hidden">
+      <div className='flex h-screen overflow-hidden'>
         {/* Desktop sidebar — hidden on mobile */}
-        <div className="hidden md:block">
+        <div className='hidden md:block'>
           <Sidebar
             isCollapsed={isCollapsed}
             onToggle={() => setIsCollapsed((prev) => !prev)}
@@ -24,8 +24,8 @@ export const AppLayout = () => {
 
         {/* Mobile sidebar — Sheet slides in from the left */}
         <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
-          <SheetContent side="left" className="w-64 p-0">
-            <SheetTitle className="sr-only">Navigation menu</SheetTitle>
+          <SheetContent side='left' className='w-64 p-0'>
+            <SheetTitle className='sr-only'>Navigation menu</SheetTitle>
             <Sidebar
               isCollapsed={false}
               onToggle={() => setIsMobileOpen(false)}
@@ -34,9 +34,9 @@ export const AppLayout = () => {
         </Sheet>
 
         {/* Main content area — takes remaining width */}
-        <div className="flex flex-1 flex-col overflow-hidden">
+        <div className='flex flex-1 flex-col overflow-hidden'>
           <Header onMobileMenuToggle={() => setIsMobileOpen(true)} />
-          <main className="flex-1 overflow-y-auto p-6">
+          <main className='flex-1 overflow-y-auto p-6'>
             <Outlet />
           </main>
         </div>
