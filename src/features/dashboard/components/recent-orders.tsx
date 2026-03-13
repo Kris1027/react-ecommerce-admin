@@ -41,9 +41,9 @@ const RecentOrders = () => {
           <CardDescription>Last 5 orders</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
+          <div className='space-y-3'>
             {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-10 w-full" />
+              <Skeleton key={i} className='h-10 w-full' />
             ))}
           </div>
         </CardContent>
@@ -59,7 +59,7 @@ const RecentOrders = () => {
         <CardTitle>Recent Orders</CardTitle>
         <CardDescription>Last 5 orders</CardDescription>
         <CardAction>
-          <Button variant="ghost" size="sm" asChild>
+          <Button variant='ghost' size='sm' asChild>
             <Link to={'/orders' as string}>
               View all <ArrowRight size={16} />
             </Link>
@@ -72,13 +72,13 @@ const RecentOrders = () => {
             <TableRow>
               <TableHead>Order</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="text-right">Total</TableHead>
+              <TableHead className='text-right'>Total</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {orders.map((order) => (
               <TableRow key={order.id}>
-                <TableCell className="font-medium">
+                <TableCell className='font-medium'>
                   {order.orderNumber}
                 </TableCell>
                 <TableCell>
@@ -87,7 +87,7 @@ const RecentOrders = () => {
                     statusMap={ORDER_STATUS_MAP}
                   />
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell className='text-right'>
                   <MoneyDisplay amount={Number(order.total)} />
                 </TableCell>
               </TableRow>

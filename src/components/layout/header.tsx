@@ -37,14 +37,14 @@ export const Header = ({ onMobileMenuToggle }: HeaderProps) => {
   };
 
   return (
-    <header className="bg-background flex h-14 items-center justify-between border-b px-4">
-      <div className="flex items-center gap-2">
+    <header className='bg-background flex h-14 items-center justify-between border-b px-4'>
+      <div className='flex items-center gap-2'>
         <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden"
+          variant='ghost'
+          size='icon'
+          className='md:hidden'
           onClick={onMobileMenuToggle}
-          aria-label="Open navigation menu"
+          aria-label='Open navigation menu'
         >
           <Menu size={20} />
         </Button>
@@ -52,18 +52,18 @@ export const Header = ({ onMobileMenuToggle }: HeaderProps) => {
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="flex items-center gap-2">
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+          <Button variant='ghost' className='flex items-center gap-2'>
+            <Avatar className='h-8 w-8'>
+              <AvatarFallback className='text-xs'>{initials}</AvatarFallback>
             </Avatar>
             {user?.email && (
-              <span className="hidden text-sm md:inline-block">
+              <span className='hidden text-sm md:inline-block'>
                 {user.email}
               </span>
             )}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuContent align='end' className='w-48'>
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem disabled>
@@ -72,8 +72,8 @@ export const Header = ({ onMobileMenuToggle }: HeaderProps) => {
           </DropdownMenuItem>
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
-              <Sun size={16} className="dark:hidden" />
-              <Moon size={16} className="hidden dark:block" />
+              <Sun size={16} className='dark:hidden' />
+              <Moon size={16} className='hidden dark:block' />
               <span>Theme</span>
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
@@ -81,19 +81,19 @@ export const Header = ({ onMobileMenuToggle }: HeaderProps) => {
                 <Sun size={16} />
                 <span>Light</span>
                 {theme === 'light' && (
-                  <span className="ml-auto text-xs">✓</span>
+                  <span className='ml-auto text-xs'>✓</span>
                 )}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setTheme('dark')}>
                 <Moon size={16} />
                 <span>Dark</span>
-                {theme === 'dark' && <span className="ml-auto text-xs">✓</span>}
+                {theme === 'dark' && <span className='ml-auto text-xs'>✓</span>}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setTheme('system')}>
                 <Monitor size={16} />
                 <span>System</span>
                 {theme === 'system' && (
-                  <span className="ml-auto text-xs">✓</span>
+                  <span className='ml-auto text-xs'>✓</span>
                 )}
               </DropdownMenuItem>
             </DropdownMenuSubContent>

@@ -22,7 +22,7 @@ const StatusBadge = ({ status, statusMap, className }: StatusBadgeProps) => {
 
   if (!config) {
     return (
-      <Badge variant="outline" className={className}>
+      <Badge variant='outline' className={className}>
         {status}
       </Badge>
     );

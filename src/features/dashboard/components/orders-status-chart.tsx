@@ -103,7 +103,7 @@ const OrdersStatusChart = () => {
           <CardDescription>Current distribution</CardDescription>
         </CardHeader>
         <CardContent>
-          <Skeleton className="h-75 w-full" />
+          <Skeleton className='h-75 w-full' />
         </CardContent>
       </Card>
     );
@@ -116,14 +116,14 @@ const OrdersStatusChart = () => {
         <CardDescription>Current distribution</CardDescription>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width='100%' height={300}>
           <PieChart>
             <Pie
               data={chartData}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
+              dataKey='value'
+              nameKey='name'
+              cx='50%'
+              cy='50%'
               innerRadius={60}
               outerRadius={100}
               paddingAngle={2}
@@ -135,14 +135,14 @@ const OrdersStatusChart = () => {
             <Tooltip formatter={(value) => [Number(value), 'Orders']} />
           </PieChart>
         </ResponsiveContainer>
-        <div className="mt-4 flex flex-wrap justify-center gap-4">
+        <div className='mt-4 flex flex-wrap justify-center gap-4'>
           {chartData.map((entry) => (
-            <div key={entry.name} className="flex items-center gap-2 text-sm">
+            <div key={entry.name} className='flex items-center gap-2 text-sm'>
               <div
-                className="size-3 rounded-full"
+                className='size-3 rounded-full'
                 style={{ backgroundColor: entry.fill }}
               />
-              <span className="text-muted-foreground">
+              <span className='text-muted-foreground'>
                 {entry.name}: {entry.value}
               </span>
             </div>

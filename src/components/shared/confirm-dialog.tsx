@@ -40,7 +40,7 @@ const ConfirmDialog = ({
         </DialogHeader>
         <DialogFooter>
           <Button
-            variant="outline"
+            variant='outline'
             onClick={() => onOpenChange(false)}
             disabled={isLoading}
           >

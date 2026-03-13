@@ -84,10 +84,10 @@ const DataTable = <TData,>({
         } as DataTableContextValue<unknown>
       }
     >
-      <div className="flex flex-col gap-4">
+      <div className='flex flex-col gap-4'>
         {children}
 
-        <div className="rounded-md border">
+        <div className='rounded-md border'>
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -123,7 +123,7 @@ const DataTable = <TData,>({
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
-                    className="h-24 text-center"
+                    className='h-24 text-center'
                   >
                     {emptyMessage}
                   </TableCell>

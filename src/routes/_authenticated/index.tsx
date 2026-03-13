@@ -73,39 +73,39 @@ const DashboardPage = () => {
     revenueQuery.isLoading;
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       <PageHeader
-        title="Dashboard"
+        title='Dashboard'
         description="Overview of your store's performance"
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className='grid gap-4 sm:grid-cols-2 xl:grid-cols-4'>
         {isLoading ? (
           Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)
         ) : (
           <>
             <StatCard
-              title="Total Orders"
+              title='Total Orders'
               value={totalOrders ?? 0}
               description={`${todayOrders ?? 0} today`}
               icon={<ShoppingCart size={20} />}
             />
             <StatCard
-              title="Revenue"
+              title='Revenue'
               value={<MoneyDisplay amount={totalRevenue ?? 0} />}
-              description="From successful payments"
+              description='From successful payments'
               icon={<DollarSign size={20} />}
             />
             <StatCard
-              title="Products"
+              title='Products'
               value={totalProducts ?? 0}
-              description="Active in catalog"
+              description='Active in catalog'
               icon={<Package size={20} />}
             />
             <StatCard
-              title="Users"
+              title='Users'
               value={totalUsers ?? 0}
-              description="Registered accounts"
+              description='Registered accounts'
               icon={<Users size={20} />}
             />
           </>

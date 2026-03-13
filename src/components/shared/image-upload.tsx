@@ -116,29 +116,29 @@ const ImageUpload = ({
   };
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className='flex flex-col gap-2'>
       {preview ? (
-        <div className="relative w-fit">
+        <div className='relative w-fit'>
           <img
             src={preview}
-            alt="Upload preview"
-            className="h-40 w-40 rounded-md border object-cover"
+            alt='Upload preview'
+            className='h-40 w-40 rounded-md border object-cover'
           />
           {!disabled && (
             <Button
-              type="button"
-              variant="destructive"
-              size="icon"
-              className="absolute -top-2 -right-2 size-6"
+              type='button'
+              variant='destructive'
+              size='icon'
+              className='absolute -top-2 -right-2 size-6'
               onClick={handleRemove}
             >
-              <X className="size-4" />
+              <X className='size-4' />
             </Button>
           )}
         </div>
       ) : (
         <div
-          role="button"
+          role='button'
           tabIndex={0}
           onClick={handleClick}
           onKeyDown={(e) => {
@@ -155,8 +155,8 @@ const ImageUpload = ({
             disabled && 'pointer-events-none opacity-50',
           )}
         >
-          <Upload className="text-muted-foreground size-8" />
-          <p className="text-muted-foreground text-xs">
+          <Upload className='text-muted-foreground size-8' />
+          <p className='text-muted-foreground text-xs'>
             Click or drag to upload
           </p>
         </div>
@@ -164,13 +164,13 @@ const ImageUpload = ({
 
       <input
         ref={inputRef}
-        type="file"
+        type='file'
         accept={accept}
         onChange={handleFileChange}
-        className="hidden"
+        className='hidden'
       />
 
-      {error && <p className="text-destructive text-sm">{error}</p>}
+      {error && <p className='text-destructive text-sm'>{error}</p>}
     </div>
   );
 };

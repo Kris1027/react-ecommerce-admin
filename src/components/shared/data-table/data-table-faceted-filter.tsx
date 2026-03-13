@@ -48,15 +48,15 @@ const DataTableFacetedFilter = ({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8 border-dashed">
-          <PlusCircle className="size-4" />
+        <Button variant='outline' size='sm' className='h-8 border-dashed'>
+          <PlusCircle className='size-4' />
           {title}
           {selectedValues.length > 0 && (
             <>
-              <Separator orientation="vertical" className="mx-1 h-4" />
-              <div className="flex gap-1">
+              <Separator orientation='vertical' className='mx-1 h-4' />
+              <div className='flex gap-1'>
                 {selectedValues.length > 2 ? (
-                  <Badge variant="secondary" className="rounded-sm px-1">
+                  <Badge variant='secondary' className='rounded-sm px-1'>
                     {selectedValues.length} selected
                   </Badge>
                 ) : (
@@ -65,8 +65,8 @@ const DataTableFacetedFilter = ({
                     .map((opt) => (
                       <Badge
                         key={opt.value}
-                        variant="secondary"
-                        className="rounded-sm px-1"
+                        variant='secondary'
+                        className='rounded-sm px-1'
                       >
                         {opt.label}
                       </Badge>
@@ -77,7 +77,7 @@ const DataTableFacetedFilter = ({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-48 p-0" align="start">
+      <PopoverContent className='w-48 p-0' align='start'>
         <Command>
           <CommandInput placeholder={`Search ${title.toLowerCase()}...`} />
           <CommandList>
@@ -98,11 +98,11 @@ const DataTableFacetedFilter = ({
                           : 'opacity-50',
                       )}
                     >
-                      {isSelected && <Check className="size-3" />}
+                      {isSelected && <Check className='size-3' />}
                     </div>
                     <span>{option.label}</span>
                     {option.count !== undefined && (
-                      <span className="text-muted-foreground ml-auto text-xs">
+                      <span className='text-muted-foreground ml-auto text-xs'>
                         {option.count}
                       </span>
                     )}
@@ -116,7 +116,7 @@ const DataTableFacetedFilter = ({
                 <CommandGroup>
                   <CommandItem
                     onSelect={() => onSelectionChange([])}
-                    className="justify-center text-center"
+                    className='justify-center text-center'
                   >
                     Clear filters
                   </CommandItem>

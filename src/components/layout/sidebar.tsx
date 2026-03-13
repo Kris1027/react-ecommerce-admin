@@ -94,28 +94,28 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
         isCollapsed ? 'w-16' : 'w-64',
       )}
     >
-      <div className="flex h-14 items-center border-b px-4">
+      <div className='flex h-14 items-center border-b px-4'>
         {!isCollapsed && (
-          <div className="flex items-center gap-2">
-            <Box size={24} className="text-primary" />
-            <span className="text-lg font-semibold">Admin</span>
+          <div className='flex items-center gap-2'>
+            <Box size={24} className='text-primary' />
+            <span className='text-lg font-semibold'>Admin</span>
           </div>
         )}
-        {isCollapsed && <Box size={24} className="text-primary mx-auto" />}
+        {isCollapsed && <Box size={24} className='text-primary mx-auto' />}
       </div>
 
-      <nav className="flex-1 overflow-y-auto p-2">
+      <nav className='flex-1 overflow-y-auto p-2'>
         {NAV_GROUPS.map((group) => (
-          <div key={group.title} className="mb-4">
+          <div key={group.title} className='mb-4'>
             {!isCollapsed && (
               <p
-                className="text-muted-foreground mb-1 px-3 text-xs font-medium uppercase
-  tracking-wider"
+                className='text-muted-foreground mb-1 px-3 text-xs font-medium uppercase
+  tracking-wider'
               >
                 {group.title}
               </p>
             )}
-            {isCollapsed && <div className="bg-border mx-auto mb-1 h-px w-8" />}
+            {isCollapsed && <div className='bg-border mx-auto mb-1 h-px w-8' />}
 
             {group.items.map((item) => (
               <NavLink key={item.to} item={item} isCollapsed={isCollapsed} />
@@ -124,12 +124,12 @@ export const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
         ))}
       </nav>
 
-      <div className="border-t p-2">
+      <div className='border-t p-2'>
         <Button
-          variant="ghost"
-          size="sm"
+          variant='ghost'
+          size='sm'
           onClick={onToggle}
-          className="w-full justify-center"
+          className='w-full justify-center'
           aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           <ChevronLeft
@@ -176,7 +176,7 @@ const NavLink = ({ item, isCollapsed }: NavLinkProps) => {
     return (
       <Tooltip delayDuration={0}>
         <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
-        <TooltipContent side="right">{item.label}</TooltipContent>
+        <TooltipContent side='right'>{item.label}</TooltipContent>
       </Tooltip>
     );
   }

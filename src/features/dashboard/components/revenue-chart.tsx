@@ -78,7 +78,7 @@ const RevenueChart = () => {
           <CardDescription>Last 30 days</CardDescription>
         </CardHeader>
         <CardContent>
-          <Skeleton className="h-75 w-full" />
+          <Skeleton className='h-75 w-full' />
         </CardContent>
       </Card>
     );
@@ -91,11 +91,11 @@ const RevenueChart = () => {
         <CardDescription>Last 30 days</CardDescription>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width='100%' height={300}>
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+            <CartesianGrid strokeDasharray='3 3' className='stroke-border' />
             <XAxis
-              dataKey="date"
+              dataKey='date'
               tickFormatter={formatDate}
               fontSize={12}
               tickLine={false}
@@ -116,9 +116,9 @@ const RevenueChart = () => {
               labelFormatter={(label) => formatDate(String(label))}
             />
             <Line
-              type="monotone"
-              dataKey="revenue"
-              className="stroke-chart-1"
+              type='monotone'
+              dataKey='revenue'
+              className='stroke-chart-1'
               strokeWidth={2}
               dot={false}
               activeDot={{ r: 4 }}

@@ -57,53 +57,53 @@ export const LoginForm = ({ redirectTo }: LoginFormProps) => {
   };
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className='w-full max-w-sm'>
       <CardHeader>
-        <CardTitle className="text-2xl">Admin Login</CardTitle>
+        <CardTitle className='text-2xl'>Admin Login</CardTitle>
         <CardDescription>Sign in to access the admin dashboard</CardDescription>
       </CardHeader>
       <CardContent>
         <form
           onSubmit={handleSubmit(handleLogin)}
-          className="flex flex-col gap-4"
+          className='flex flex-col gap-4'
         >
           {errors.root && (
-            <div className="bg-destructive/10 text-destructive rounded-md p-3 text-sm">
+            <div className='bg-destructive/10 text-destructive rounded-md p-3 text-sm'>
               {errors.root.message}
             </div>
           )}
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="email">Email</Label>
+          <div className='flex flex-col gap-2'>
+            <Label htmlFor='email'>Email</Label>
             <Input
-              id="email"
-              type="email"
-              placeholder="admin@example.com"
-              autoComplete="email"
+              id='email'
+              type='email'
+              placeholder='admin@example.com'
+              autoComplete='email'
               {...register('email')}
             />
             {errors.email && (
-              <p className="text-destructive text-sm">{errors.email.message}</p>
+              <p className='text-destructive text-sm'>{errors.email.message}</p>
             )}
           </div>
 
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="password">Password</Label>
+          <div className='flex flex-col gap-2'>
+            <Label htmlFor='password'>Password</Label>
             <Input
-              id="password"
-              type="password"
-              placeholder="Enter your password"
-              autoComplete="current-password"
+              id='password'
+              type='password'
+              placeholder='Enter your password'
+              autoComplete='current-password'
               {...register('password')}
             />
             {errors.password && (
-              <p className="text-destructive text-sm">
+              <p className='text-destructive text-sm'>
                 {errors.password.message}
               </p>
             )}
           </div>
 
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+          <Button type='submit' className='w-full' disabled={isSubmitting}>
             {isSubmitting ? 'Signing in...' : 'Sign in'}
           </Button>
         </form>
