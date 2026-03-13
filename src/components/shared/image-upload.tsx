@@ -61,6 +61,12 @@ const ImageUpload = ({
   const validateAndSet = (file: File) => {
     setError(null);
 
+    const allowedTypes = accept.split(',').map((t) => t.trim());
+    if (!allowedTypes.includes(file.type)) {
+      setError(`File type must be one of: ${allowedTypes.join(', ')}`);
+      return;
+    }
+
     const maxBytes = maxSizeMB * 1024 * 1024;
     if (file.size > maxBytes) {
       setError(`File size must be less than ${maxSizeMB}MB`);
