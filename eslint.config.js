@@ -36,5 +36,11 @@ export default defineConfig([
       'react-hooks/incompatible-library': 'off',
     },
   },
+  {
+    files: ['src/routes/**/*.tsx'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
   eslintConfigPrettier,
 ]);
