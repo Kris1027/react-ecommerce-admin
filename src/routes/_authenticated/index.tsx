@@ -22,12 +22,15 @@ import {
 
 const getTodayRange = (): { fromDate: string; toDate: string } => {
   const now = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const end = new Date(start);
-  end.setDate(end.getDate() + 1);
+  const start = Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+  );
+  const end = start + 24 * 60 * 60 * 1000;
   return {
-    fromDate: start.toISOString(),
-    toDate: end.toISOString(),
+    fromDate: new Date(start).toISOString(),
+    toDate: new Date(end).toISOString(),
   };
 };
 
@@ -76,6 +79,7 @@ const DashboardPage = () => {
 
   const isLoading =
     ordersQuery.isLoading ||
+    todayOrdersQuery.isLoading ||
     productsQuery.isLoading ||
     usersQuery.isLoading ||
     revenueQuery.isLoading;
