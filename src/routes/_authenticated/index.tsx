@@ -10,7 +10,15 @@ import {
 } from '@/api/generated/@tanstack/react-query.gen';
 import { MoneyDisplay } from '@/components/shared/money-display';
 import { PageHeader } from '@/components/shared/page-header';
-import { StatCard, StatCardSkeleton } from '@/features/dashboard';
+import {
+  StatCard,
+  StatCardSkeleton,
+  RevenueChart,
+  OrdersStatusChart,
+  RecentOrders,
+  LowStockAlerts,
+  PendingReviews,
+} from '@/features/dashboard';
 
 const getTodayRange = (): { fromDate: string; toDate: string } => {
   const now = new Date();
@@ -110,6 +118,19 @@ const DashboardPage = () => {
             />
           </>
         )}
+      </div>
+
+      <div className='grid gap-4 lg:grid-cols-2'>
+        <RevenueChart />
+        <OrdersStatusChart />
+      </div>
+
+      <div className='grid gap-4 lg:grid-cols-2'>
+        <RecentOrders />
+        <div className='space-y-4'>
+          <LowStockAlerts />
+          <PendingReviews />
+        </div>
       </div>
     </div>
   );
