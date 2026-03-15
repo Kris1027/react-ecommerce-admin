@@ -104,6 +104,7 @@ function ProductsPage() {
 
       <div className='flex items-center gap-4'>
         <Input
+          key={search.search}
           placeholder='Search products...'
           defaultValue={search.search ?? ''}
           onKeyDown={(e) => {

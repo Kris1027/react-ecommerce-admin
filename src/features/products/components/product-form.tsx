@@ -151,6 +151,9 @@ export const ProductForm = ({ product }: ProductFormProps) => {
   const removeImageMutation = useMutation({
     ...productsControllerRemoveImageMutation(),
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: productsControllerFindAllQueryKey(),
+      });
       if (product) {
         queryClient.invalidateQueries({
           queryKey: productsControllerFindBySlugQueryKey({
@@ -168,18 +171,18 @@ export const ProductForm = ({ product }: ProductFormProps) => {
 
   const onSubmit = async (values: ProductFormValues) => {
     const slugChanged = values.slug !== (product?.slug ?? '');
-    const body = {
-      ...values,
-      slug: slugChanged ? values.slug || undefined : undefined,
-      description: values.description || undefined,
-      comparePrice: values.comparePrice || undefined,
-      sku: values.sku || undefined,
-    };
 
     if (isEditing && product) {
+      // PATCH: send null to clear nullable fields, undefined to leave unchanged
       const result = await updateMutation.mutateAsync({
         path: { id: product.id },
-        body,
+        body: {
+          ...values,
+          slug: slugChanged ? values.slug || undefined : undefined,
+          description: values.description || null,
+          comparePrice: values.comparePrice || null,
+          sku: values.sku || null,
+        },
       });
 
       if (newImageFile) {
@@ -215,6 +218,14 @@ export const ProductForm = ({ product }: ProductFormProps) => {
         });
       }
     } else {
+      // POST: omit empty optional fields
+      const body = {
+        ...values,
+        slug: values.slug || undefined,
+        description: values.description || undefined,
+        comparePrice: values.comparePrice || undefined,
+        sku: values.sku || undefined,
+      };
       const result = await createMutation.mutateAsync({ body });
 
       if (newImageFile) {

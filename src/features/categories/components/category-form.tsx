@@ -146,17 +146,16 @@ export const CategoryForm = ({ category }: CategoryFormProps) => {
     uploadImageMutation.isPending;
 
   const onSubmit = async (values: CategoryFormValues) => {
-    const body = {
-      ...values,
-      slug: values.slug || undefined,
-      description: values.description || undefined,
-      parentId: values.parentId || undefined,
-    };
-
     if (isEditing && category) {
+      // PATCH: send null to clear nullable fields, undefined to leave unchanged
       const result = await updateMutation.mutateAsync({
         path: { id: category.id },
-        body,
+        body: {
+          ...values,
+          slug: values.slug || undefined,
+          description: values.description || null,
+          parentId: values.parentId || null,
+        },
       });
 
       if (imageFile) {
@@ -189,6 +188,13 @@ export const CategoryForm = ({ category }: CategoryFormProps) => {
         });
       }
     } else {
+      // POST: omit empty optional fields
+      const body = {
+        ...values,
+        slug: values.slug || undefined,
+        description: values.description || undefined,
+        parentId: values.parentId || undefined,
+      };
       const result = await createMutation.mutateAsync({ body });
 
       if (imageFile) {
