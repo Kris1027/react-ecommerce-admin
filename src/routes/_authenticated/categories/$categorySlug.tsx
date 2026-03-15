@@ -51,7 +51,7 @@ function CategoryDetailPage() {
 
       <div className='grid grid-cols-1 gap-6 lg:grid-cols-3'>
         <div className='lg:col-span-2'>
-          <CategoryForm category={category} />
+          <CategoryForm key={category.id} category={category} />
         </div>
 
         <Card>

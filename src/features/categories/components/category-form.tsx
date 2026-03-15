@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -82,6 +82,23 @@ export const CategoryForm = ({ category }: CategoryFormProps) => {
 
   const parentId = useWatch({ control, name: 'parentId' });
   const isActive = useWatch({ control, name: 'isActive' });
+  const nameValue = useWatch({ control, name: 'name' });
+
+  // Track whether the user has manually edited the slug
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+
+  // Auto-generate slug from name when user hasn't manually edited it
+  useEffect(() => {
+    if (!slugManuallyEdited && nameValue) {
+      const autoSlug = nameValue
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
+      setValue('slug', autoSlug);
+    }
+  }, [nameValue, slugManuallyEdited, setValue]);
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const existingImageUrl =
@@ -103,7 +120,9 @@ export const CategoryForm = ({ category }: CategoryFormProps) => {
         queryKey: categoriesControllerFindAllQueryKey(),
       });
       if (category) {
-        queryClient.invalidateQueries({
+        // Remove old slug query from cache instead of invalidating
+        // to avoid a 404 refetch when the slug has changed
+        queryClient.removeQueries({
           queryKey: categoriesControllerFindBySlugQueryKey({
             path: { slug: category.slug },
           }),
@@ -159,6 +178,16 @@ export const CategoryForm = ({ category }: CategoryFormProps) => {
         isActive: updated.isActive,
       });
       setImageFile(null);
+      setSlugManuallyEdited(false);
+
+      // If slug changed (e.g. name was updated), navigate to the new URL
+      if (updated.slug !== category.slug) {
+        navigate({
+          to: '/categories/$categorySlug',
+          params: { categorySlug: updated.slug },
+          replace: true,
+        });
+      }
     } else {
       const result = await createMutation.mutateAsync({ body });
 
@@ -198,7 +227,12 @@ export const CategoryForm = ({ category }: CategoryFormProps) => {
             error={errors.slug?.message}
             description='Leave empty to auto-generate from name'
           >
-            <Input id='slug' {...register('slug')} />
+            <Input
+              id='slug'
+              {...register('slug', {
+                onChange: () => setSlugManuallyEdited(true),
+              })}
+            />
           </FormField>
 
           <FormField
