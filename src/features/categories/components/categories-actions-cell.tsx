@@ -4,7 +4,6 @@ import { useNavigate } from '@tanstack/react-router';
 import { Eye, MoreHorizontal, Power, PowerOff, Trash2 } from 'lucide-react';
 
 import {
-  categoriesControllerDeactivateMutation,
   categoriesControllerFindAllQueryKey,
   categoriesControllerHardDeleteMutation,
   categoriesControllerUpdateMutation,
@@ -32,17 +31,8 @@ export const CategoriesActionsCell = ({
   const [showDeactivate, setShowDeactivate] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
 
-  const activateMutation = useMutation({
+  const toggleActiveMutation = useMutation({
     ...categoriesControllerUpdateMutation(),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: categoriesControllerFindAllQueryKey(),
-      });
-    },
-  });
-
-  const deactivateMutation = useMutation({
-    ...categoriesControllerDeactivateMutation(),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: categoriesControllerFindAllQueryKey(),
@@ -90,9 +80,9 @@ export const CategoriesActionsCell = ({
             </DropdownMenuItem>
           ) : (
             <DropdownMenuItem
-              disabled={activateMutation.isPending}
+              disabled={toggleActiveMutation.isPending}
               onClick={() =>
-                activateMutation.mutate({
+                toggleActiveMutation.mutate({
                   path: { id: category.id },
                   body: { isActive: true },
                 })
@@ -119,9 +109,12 @@ export const CategoriesActionsCell = ({
         description={`Are you sure you want to deactivate "${category.name}"? It will be hidden from the store.`}
         confirmLabel='Deactivate'
         variant='destructive'
-        isLoading={deactivateMutation.isPending}
+        isLoading={toggleActiveMutation.isPending}
         onConfirm={() =>
-          deactivateMutation.mutate({ path: { id: category.id } })
+          toggleActiveMutation.mutate({
+            path: { id: category.id },
+            body: { isActive: false },
+          })
         }
       />
 
