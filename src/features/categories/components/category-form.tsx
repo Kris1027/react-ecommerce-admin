@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
@@ -28,11 +27,13 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { generateSlug, slugSchema } from '@/lib/utils';
+import { z } from 'zod';
 
 const categoryFormSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  slug: z.string().optional(),
-  description: z.string().optional(),
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  slug: slugSchema,
+  description: z.string().max(1000, 'Description too long').optional(),
   parentId: z.string().optional(),
   sortOrder: z.number().int().min(0),
   isActive: z.boolean(),
@@ -90,13 +91,7 @@ export const CategoryForm = ({ category }: CategoryFormProps) => {
   // Auto-generate slug from name when user hasn't manually edited it
   useEffect(() => {
     if (!slugManuallyEdited && nameValue) {
-      const autoSlug = nameValue
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-');
-      setValue('slug', autoSlug);
+      setValue('slug', generateSlug(nameValue));
     }
   }, [nameValue, slugManuallyEdited, setValue]);
 
@@ -234,7 +229,11 @@ export const CategoryForm = ({ category }: CategoryFormProps) => {
             label='Slug'
             name='slug'
             error={errors.slug?.message}
-            description='Leave empty to auto-generate from name'
+            description={
+              isEditing
+                ? 'Auto-updates when you change the name'
+                : 'Leave empty to auto-generate from name'
+            }
           >
             <Input
               id='slug'

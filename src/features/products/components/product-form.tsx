@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
@@ -30,13 +29,21 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { generateSlug, slugSchema, priceSchema } from '@/lib/utils';
+import { z } from 'zod';
+
+const priceOptionalSchema = z
+  .string()
+  .regex(/^\d+(\.\d{1,2})?$/, 'Must be a valid amount (e.g. 10.99)')
+  .optional()
+  .or(z.literal(''));
 
 const productFormSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  slug: z.string().optional(),
-  description: z.string().optional(),
-  price: z.string().min(1, 'Price is required'),
-  comparePrice: z.string().optional(),
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  slug: slugSchema,
+  description: z.string().max(5000, 'Description too long').optional(),
+  price: priceSchema,
+  comparePrice: priceOptionalSchema,
   sku: z.string().optional(),
   stock: z.number().int().min(0),
   categoryId: z.string().min(1, 'Category is required'),
@@ -95,13 +102,7 @@ export const ProductForm = ({ product }: ProductFormProps) => {
 
   useEffect(() => {
     if (!slugManuallyEdited && nameValue) {
-      const autoSlug = nameValue
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-');
-      setValue('slug', autoSlug);
+      setValue('slug', generateSlug(nameValue));
     }
   }, [nameValue, slugManuallyEdited, setValue]);
 
@@ -261,7 +262,11 @@ export const ProductForm = ({ product }: ProductFormProps) => {
             label='Slug'
             name='slug'
             error={errors.slug?.message}
-            description='Leave empty to auto-generate from name'
+            description={
+              isEditing
+                ? 'Auto-updates when you change the name'
+                : 'Leave empty to auto-generate from name'
+            }
           >
             <Input
               id='slug'
