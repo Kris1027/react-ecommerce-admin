@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 
 import type { ProductListItemDto } from '@/api/generated/types.gen';
 import { DataTableColumnHeader } from '@/components/shared/data-table';
+import { MoneyDisplay } from '@/components/shared/money-display';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { Badge } from '@/components/ui/badge';
 import { ProductsActionsCell } from './products-actions-cell';
@@ -51,13 +52,9 @@ export const columns: ColumnDef<ProductListItemDto, unknown>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Price' />
     ),
-    cell: ({ getValue }) => {
-      const price = parseFloat(getValue() as string);
-      return new Intl.NumberFormat('pl-PL', {
-        style: 'currency',
-        currency: 'PLN',
-      }).format(price);
-    },
+    cell: ({ getValue }) => (
+      <MoneyDisplay amount={parseFloat(getValue() as string)} />
+    ),
   },
   {
     accessorKey: 'stock',

@@ -4,6 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
 
 import { productsControllerFindBySlugOptions } from '@/api/generated/@tanstack/react-query.gen';
+import { MoneyDisplay } from '@/components/shared/money-display';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -68,12 +69,10 @@ function ProductDetailPage() {
             </div>
             <div>
               <p className='text-muted-foreground text-sm'>Price</p>
-              <p className='text-sm'>
-                {new Intl.NumberFormat('pl-PL', {
-                  style: 'currency',
-                  currency: 'PLN',
-                }).format(parseFloat(product.price))}
-              </p>
+              <MoneyDisplay
+                amount={parseFloat(product.price)}
+                className='text-sm'
+              />
             </div>
             <div>
               <p className='text-muted-foreground text-sm'>Stock</p>
