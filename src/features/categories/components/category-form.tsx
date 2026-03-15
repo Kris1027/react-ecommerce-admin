@@ -119,15 +119,6 @@ export const CategoryForm = ({ category }: CategoryFormProps) => {
       queryClient.invalidateQueries({
         queryKey: categoriesControllerFindAllQueryKey(),
       });
-      if (category) {
-        // Remove old slug query from cache instead of invalidating
-        // to avoid a 404 refetch when the slug has changed
-        queryClient.removeQueries({
-          queryKey: categoriesControllerFindBySlugQueryKey({
-            path: { slug: category.slug },
-          }),
-        });
-      }
     },
   });
 
@@ -179,12 +170,24 @@ export const CategoryForm = ({ category }: CategoryFormProps) => {
       setImageFile(null);
       setSlugManuallyEdited(false);
 
-      // If slug changed (e.g. name was updated), navigate to the new URL
       if (updated.slug !== category.slug) {
+        // Slug changed — remove old cache, navigate to new URL
+        queryClient.removeQueries({
+          queryKey: categoriesControllerFindBySlugQueryKey({
+            path: { slug: category.slug },
+          }),
+        });
         navigate({
           to: '/categories/$categorySlug',
           params: { categorySlug: updated.slug },
           replace: true,
+        });
+      } else {
+        // Slug unchanged — refetch detail to show updated data/images
+        queryClient.invalidateQueries({
+          queryKey: categoriesControllerFindBySlugQueryKey({
+            path: { slug: category.slug },
+          }),
         });
       }
     } else {

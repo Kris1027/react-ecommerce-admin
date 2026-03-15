@@ -122,13 +122,6 @@ export const ProductForm = ({ product }: ProductFormProps) => {
       queryClient.invalidateQueries({
         queryKey: productsControllerFindAllQueryKey(),
       });
-      if (product) {
-        queryClient.removeQueries({
-          queryKey: productsControllerFindBySlugQueryKey({
-            path: { slug: product.slug },
-          }),
-        });
-      }
     },
   });
 
@@ -138,13 +131,6 @@ export const ProductForm = ({ product }: ProductFormProps) => {
       queryClient.invalidateQueries({
         queryKey: productsControllerFindAllQueryKey(),
       });
-      if (product) {
-        queryClient.invalidateQueries({
-          queryKey: productsControllerFindBySlugQueryKey({
-            path: { slug: product.slug },
-          }),
-        });
-      }
     },
   });
 
@@ -211,10 +197,23 @@ export const ProductForm = ({ product }: ProductFormProps) => {
       setSlugManuallyEdited(false);
 
       if (updated.slug !== product.slug) {
+        // Slug changed — remove old cache, navigate to new URL
+        queryClient.removeQueries({
+          queryKey: productsControllerFindBySlugQueryKey({
+            path: { slug: product.slug },
+          }),
+        });
         navigate({
           to: '/products/$productSlug',
           params: { productSlug: updated.slug },
           replace: true,
+        });
+      } else {
+        // Slug unchanged — refetch detail to show updated data/images
+        queryClient.invalidateQueries({
+          queryKey: productsControllerFindBySlugQueryKey({
+            path: { slug: product.slug },
+          }),
         });
       }
     } else {
