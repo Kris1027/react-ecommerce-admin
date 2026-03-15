@@ -45,6 +45,7 @@ export const UserForm = ({ user }: UserFormProps) => {
     register,
     handleSubmit,
     setValue,
+    reset,
     control,
     formState: { errors, isDirty },
   } = useForm<UserFormValues>({
@@ -59,7 +60,14 @@ export const UserForm = ({ user }: UserFormProps) => {
 
   const updateMutation = useMutation({
     ...usersControllerAdminUpdateUserMutation(),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      const updated = data.data;
+      reset({
+        firstName: (updated.firstName as unknown as string) ?? '',
+        lastName: (updated.lastName as unknown as string) ?? '',
+        role: updated.role,
+        isActive: updated.isActive,
+      });
       queryClient.invalidateQueries({
         queryKey: usersControllerFindByIdQueryKey({ path: { id: user.id } }),
       });
@@ -87,7 +95,7 @@ export const UserForm = ({ user }: UserFormProps) => {
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
           <FormField label='Email' name='email'>
-            <Input value={user.email} disabled />
+            <Input id='email' value={user.email} disabled />
           </FormField>
 
           <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
