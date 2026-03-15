@@ -10,15 +10,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CategoryForm } from '@/features/categories/components/category-form';
 
-export const Route = createFileRoute('/_authenticated/categories/$categoryId')({
+export const Route = createFileRoute(
+  '/_authenticated/categories/$categorySlug',
+)({
   component: CategoryDetailPage,
 });
 
 function CategoryDetailPage() {
-  const { categoryId } = Route.useParams();
+  const { categorySlug } = Route.useParams();
 
   const { data, isLoading } = useQuery(
-    categoriesControllerFindBySlugOptions({ path: { slug: categoryId } }),
+    categoriesControllerFindBySlugOptions({ path: { slug: categorySlug } }),
   );
 
   if (isLoading) {

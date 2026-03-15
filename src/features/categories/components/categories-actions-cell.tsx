@@ -74,8 +74,8 @@ export const CategoriesActionsCell = ({
           <DropdownMenuItem
             onClick={() =>
               navigate({
-                to: '/categories/$categoryId',
-                params: { categoryId: category.id },
+                to: '/categories/$categorySlug',
+                params: { categorySlug: category.slug },
               })
             }
           >

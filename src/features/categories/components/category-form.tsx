@@ -170,8 +170,8 @@ export const CategoryForm = ({ category }: CategoryFormProps) => {
       }
 
       navigate({
-        to: '/categories/$categoryId',
-        params: { categoryId: result.data.id },
+        to: '/categories/$categorySlug',
+        params: { categorySlug: result.data.slug },
       });
     }
   };
