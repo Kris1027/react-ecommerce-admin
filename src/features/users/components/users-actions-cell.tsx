@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { Eye, MoreHorizontal, Trash2, UserX } from 'lucide-react';
+import { Eye, MoreHorizontal, Trash2, UserCheck, UserX } from 'lucide-react';
 
 import {
+  usersControllerAdminUpdateUserMutation,
   usersControllerDeactivateUserMutation,
   usersControllerFindAllQueryKey,
   usersControllerHardDeleteUserMutation,
 } from '@/api/generated/@tanstack/react-query.gen';
 import type { UserProfileDto } from '@/api/generated/types.gen';
+import { useAuthStore } from '@/stores/auth.store';
 import { ConfirmDialog } from '@/components/shared/confirm-dialog';
 import { Button } from '@/components/ui/button';
 import {
@@ -26,8 +28,19 @@ type UsersActionsCellProps = {
 export const UsersActionsCell = ({ user }: UsersActionsCellProps) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const currentUser = useAuthStore((state) => state.user);
+  const isSelf = currentUser?.id === user.id;
   const [showDeactivate, setShowDeactivate] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
+
+  const activateMutation = useMutation({
+    ...usersControllerAdminUpdateUserMutation(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: usersControllerFindAllQueryKey(),
+      });
+    },
+  });
 
   const deactivateMutation = useMutation({
     ...usersControllerDeactivateUserMutation(),
@@ -70,20 +83,37 @@ export const UsersActionsCell = ({ user }: UsersActionsCellProps) => {
             <Eye size={14} />
             View details
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          {user.isActive && (
-            <DropdownMenuItem onClick={() => setShowDeactivate(true)}>
-              <UserX size={14} />
-              Deactivate
-            </DropdownMenuItem>
+          {!isSelf && (
+            <>
+              <DropdownMenuSeparator />
+              {user.isActive ? (
+                <DropdownMenuItem onClick={() => setShowDeactivate(true)}>
+                  <UserX size={14} />
+                  Deactivate
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem
+                  disabled={activateMutation.isPending}
+                  onClick={() =>
+                    activateMutation.mutate({
+                      path: { id: user.id },
+                      body: { isActive: true },
+                    })
+                  }
+                >
+                  <UserCheck size={14} />
+                  Activate
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem
+                className='text-destructive'
+                onClick={() => setShowDelete(true)}
+              >
+                <Trash2 size={14} />
+                Delete
+              </DropdownMenuItem>
+            </>
           )}
-          <DropdownMenuItem
-            className='text-destructive'
-            onClick={() => setShowDelete(true)}
-          >
-            <Trash2 size={14} />
-            Delete
-          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
