@@ -1,0 +1,280 @@
+import { useState } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
+
+import {
+  categoriesControllerCreateMutation,
+  categoriesControllerFindAllQueryKey,
+  categoriesControllerFindAllOptions,
+  categoriesControllerFindBySlugQueryKey,
+  categoriesControllerUpdateMutation,
+  categoriesControllerUploadImageMutation,
+} from '@/api/generated/@tanstack/react-query.gen';
+import type { CategoryResponseDto } from '@/api/generated/types.gen';
+import { FormField } from '@/components/shared/form-field';
+import { ImageUpload } from '@/components/shared/image-upload';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+const categoryFormSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  slug: z.string().optional(),
+  description: z.string().optional(),
+  parentId: z.string().optional(),
+  sortOrder: z.number().int().min(0),
+  isActive: z.boolean(),
+});
+
+type CategoryFormValues = z.infer<typeof categoryFormSchema>;
+
+type CategoryFormProps = {
+  category?: CategoryResponseDto;
+};
+
+export const CategoryForm = ({ category }: CategoryFormProps) => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const isEditing = Boolean(category);
+
+  const { data: categoriesData } = useQuery({
+    ...categoriesControllerFindAllOptions({
+      query: { limit: '100' },
+    }),
+  });
+
+  const parentOptions = (categoriesData?.data ?? []).filter(
+    (c) => c.id !== category?.id,
+  );
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    control,
+    formState: { errors, isDirty },
+  } = useForm<CategoryFormValues>({
+    resolver: zodResolver(categoryFormSchema),
+    defaultValues: {
+      name: category?.name ?? '',
+      slug: typeof category?.slug === 'string' ? category.slug : '',
+      description:
+        typeof category?.description === 'string' ? category.description : '',
+      parentId:
+        typeof category?.parentId === 'string' ? category.parentId : undefined,
+      sortOrder: category?.sortOrder ?? 0,
+      isActive: category?.isActive ?? true,
+    },
+  });
+
+  const parentId = useWatch({ control, name: 'parentId' });
+  const isActive = useWatch({ control, name: 'isActive' });
+
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const existingImageUrl =
+    typeof category?.imageUrl === 'string' ? category.imageUrl : null;
+
+  const createMutation = useMutation({
+    ...categoriesControllerCreateMutation(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: categoriesControllerFindAllQueryKey(),
+      });
+    },
+  });
+
+  const updateMutation = useMutation({
+    ...categoriesControllerUpdateMutation(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: categoriesControllerFindAllQueryKey(),
+      });
+      if (category) {
+        queryClient.invalidateQueries({
+          queryKey: categoriesControllerFindBySlugQueryKey({
+            path: { slug: category.slug },
+          }),
+        });
+      }
+    },
+  });
+
+  const uploadImageMutation = useMutation({
+    ...categoriesControllerUploadImageMutation(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: categoriesControllerFindAllQueryKey(),
+      });
+    },
+  });
+
+  const isPending =
+    createMutation.isPending ||
+    updateMutation.isPending ||
+    uploadImageMutation.isPending;
+
+  const onSubmit = async (values: CategoryFormValues) => {
+    const body = {
+      ...values,
+      slug: values.slug || undefined,
+      description: values.description || undefined,
+      parentId: values.parentId || undefined,
+    };
+
+    if (isEditing && category) {
+      const result = await updateMutation.mutateAsync({
+        path: { id: category.id },
+        body,
+      });
+
+      if (imageFile) {
+        await uploadImageMutation.mutateAsync({
+          path: { id: category.id },
+          body: { file: imageFile },
+        });
+      }
+
+      const updated = result.data;
+      reset({
+        name: updated.name,
+        slug: updated.slug,
+        description:
+          typeof updated.description === 'string' ? updated.description : '',
+        parentId:
+          typeof updated.parentId === 'string' ? updated.parentId : undefined,
+        sortOrder: updated.sortOrder,
+        isActive: updated.isActive,
+      });
+      setImageFile(null);
+    } else {
+      const result = await createMutation.mutateAsync({ body });
+
+      if (imageFile) {
+        await uploadImageMutation.mutateAsync({
+          path: { id: result.data.id },
+          body: { file: imageFile },
+        });
+      }
+
+      navigate({
+        to: '/categories/$categoryId',
+        params: { categoryId: result.data.id },
+      });
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{isEditing ? 'Edit Category' : 'Create Category'}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
+          <FormField
+            label='Name'
+            name='name'
+            error={errors.name?.message}
+            required
+          >
+            <Input id='name' {...register('name')} />
+          </FormField>
+
+          <FormField
+            label='Slug'
+            name='slug'
+            error={errors.slug?.message}
+            description='Leave empty to auto-generate from name'
+          >
+            <Input id='slug' {...register('slug')} />
+          </FormField>
+
+          <FormField
+            label='Description'
+            name='description'
+            error={errors.description?.message}
+          >
+            <Textarea id='description' rows={3} {...register('description')} />
+          </FormField>
+
+          <FormField label='Parent Category' name='parentId'>
+            <Select
+              value={parentId ?? 'none'}
+              onValueChange={(value) =>
+                setValue('parentId', value === 'none' ? undefined : value, {
+                  shouldDirty: true,
+                })
+              }
+            >
+              <SelectTrigger id='parentId'>
+                <SelectValue placeholder='None (top-level)' />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value='none'>None (top-level)</SelectItem>
+                {parentOptions.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FormField>
+
+          <FormField
+            label='Sort Order'
+            name='sortOrder'
+            error={errors.sortOrder?.message}
+            description='Lower numbers appear first'
+          >
+            <Input
+              id='sortOrder'
+              type='number'
+              min={0}
+              {...register('sortOrder', { valueAsNumber: true })}
+            />
+          </FormField>
+
+          <FormField label='Active' name='isActive'>
+            <Switch
+              id='isActive'
+              checked={isActive}
+              onCheckedChange={(checked) =>
+                setValue('isActive', checked, { shouldDirty: true })
+              }
+            />
+          </FormField>
+
+          <FormField label='Image' name='image'>
+            <ImageUpload
+              value={imageFile ?? existingImageUrl}
+              onChange={(file) => setImageFile(file)}
+            />
+          </FormField>
+
+          <Button
+            type='submit'
+            disabled={(!isDirty && !imageFile) || isPending}
+          >
+            {isPending
+              ? 'Saving...'
+              : isEditing
+                ? 'Save changes'
+                : 'Create category'}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  );
+};
