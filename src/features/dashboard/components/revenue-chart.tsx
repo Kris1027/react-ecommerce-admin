@@ -18,6 +18,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { formatMoneyCompact } from '@/lib/utils';
 
 type DailyRevenue = {
   date: string;
@@ -38,14 +39,6 @@ const buildLast30Days = (): Map<string, number> => {
 const formatDate = (dateStr: string): string => {
   const date = new Date(dateStr);
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-};
-
-const formatCurrency = (value: number): string => {
-  return new Intl.NumberFormat('pl-PL', {
-    style: 'currency',
-    currency: 'PLN',
-    maximumFractionDigits: 0,
-  }).format(value);
 };
 
 const RevenueChart = () => {
@@ -102,7 +95,7 @@ const RevenueChart = () => {
               axisLine={false}
             />
             <YAxis
-              tickFormatter={formatCurrency}
+              tickFormatter={formatMoneyCompact}
               fontSize={12}
               tickLine={false}
               axisLine={false}
@@ -110,7 +103,7 @@ const RevenueChart = () => {
             />
             <Tooltip
               formatter={(value) => [
-                formatCurrency(Number(value ?? 0)),
+                formatMoneyCompact(Number(value ?? 0)),
                 'Revenue',
               ]}
               labelFormatter={(label) => formatDate(String(label))}
