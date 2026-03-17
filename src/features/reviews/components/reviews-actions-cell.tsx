@@ -47,7 +47,7 @@ export const ReviewsActionsCell = ({ review }: ReviewsActionsCellProps) => {
     },
   });
 
-  const isPending = review.status === 'PENDING';
+  const isReviewPending = review.status === 'PENDING';
 
   return (
     <>
@@ -59,9 +59,10 @@ export const ReviewsActionsCell = ({ review }: ReviewsActionsCellProps) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end'>
-          {isPending && (
+          {isReviewPending && (
             <>
               <DropdownMenuItem
+                disabled={moderateMutation.isPending}
                 onClick={() =>
                   moderateMutation.mutate({
                     path: { id: review.id },
@@ -70,10 +71,11 @@ export const ReviewsActionsCell = ({ review }: ReviewsActionsCellProps) => {
                 }
               >
                 <Check size={14} />
-                Approve
+                {moderateMutation.isPending ? 'Approving...' : 'Approve'}
               </DropdownMenuItem>
               <DropdownMenuItem
                 className='text-destructive'
+                disabled={moderateMutation.isPending}
                 onClick={() =>
                   moderateMutation.mutate({
                     path: { id: review.id },
@@ -82,7 +84,7 @@ export const ReviewsActionsCell = ({ review }: ReviewsActionsCellProps) => {
                 }
               >
                 <X size={14} />
-                Reject
+                {moderateMutation.isPending ? 'Rejecting...' : 'Reject'}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
             </>
