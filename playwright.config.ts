@@ -47,6 +47,8 @@ export default defineConfig({
     url: BASE_URL,
     // Reuse existing dev server if already running
     reuseExistingServer: !process.env.CI,
+    // Provide VITE_API_URL so Vite starts without a .env file (CI)
+    env: { VITE_API_URL: 'http://localhost:3000' },
     // Give Vite time to start (includes dependency pre-bundling on first run)
     timeout: 30_000,
   },

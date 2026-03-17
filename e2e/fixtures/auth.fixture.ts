@@ -1,9 +1,5 @@
 import { test as base, type Page } from '@playwright/test';
-import { mockAllApis } from './mock-api';
-
-// Admin credentials — must match mock-api.ts handler
-const ADMIN_EMAIL = 'admin@example.com';
-const ADMIN_PASSWORD = 'Admin123!';
+import { mockAllApis, ADMIN_EMAIL, ADMIN_PASSWORD } from './mock-api';
 
 // Reusable login helper — sets up mocks, fills form, waits for redirect
 const loginAsAdmin = async (page: Page): Promise<void> => {

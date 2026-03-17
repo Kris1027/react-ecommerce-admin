@@ -2,10 +2,14 @@ import type { Page } from '@playwright/test';
 
 const API_BASE = 'http://localhost:3000';
 
+// Shared admin credentials — single source of truth for all E2E tests
+export const ADMIN_EMAIL = 'admin@example.com';
+export const ADMIN_PASSWORD = 'Admin123!';
+
 // Mock admin user profile
 export const MOCK_ADMIN_USER = {
   id: '00000000-0000-0000-0000-000000000001',
-  email: 'admin@example.com',
+  email: ADMIN_EMAIL,
   firstName: 'Admin',
   lastName: 'User',
   role: 'ADMIN',
@@ -57,10 +61,7 @@ export const mockAllApis = async (page: Page): Promise<void> => {
 
     if (path === '/auth/login' && method === 'POST') {
       const body = request.postDataJSON();
-      if (
-        body.email !== MOCK_ADMIN_USER.email ||
-        body.password !== 'Admin123!'
-      ) {
+      if (body.email !== ADMIN_EMAIL || body.password !== ADMIN_PASSWORD) {
         return route.fulfill(
           jsonResponse(
             {
