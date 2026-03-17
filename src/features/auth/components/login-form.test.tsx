@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { LoginForm } from './login-form';
@@ -125,6 +125,8 @@ describe('LoginForm', () => {
       screen.getByRole('button', { name: 'Signing in...' }),
     ).toBeDisabled();
 
-    resolveLogin!();
+    await act(async () => {
+      resolveLogin!();
+    });
   });
 });
