@@ -1,5 +1,5 @@
 import { test as base, type Page } from '@playwright/test';
-import { mockAuthApi, mockDashboardApi } from './mock-api';
+import { mockAllApis } from './mock-api';
 
 // Admin credentials — must match mock-api.ts handler
 const ADMIN_EMAIL = 'admin@example.com';
@@ -7,9 +7,8 @@ const ADMIN_PASSWORD = 'Admin123!';
 
 // Reusable login helper — sets up mocks, fills form, waits for redirect
 const loginAsAdmin = async (page: Page): Promise<void> => {
-  // Intercept API calls before navigating
-  await mockAuthApi(page);
-  await mockDashboardApi(page);
+  // Intercept all API calls before navigating
+  await mockAllApis(page);
 
   await page.goto('/login');
 

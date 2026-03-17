@@ -1,12 +1,10 @@
 import { test, expect } from '@playwright/test';
-import { mockAuthApi, mockDashboardApi } from './fixtures/mock-api';
+import { mockAllApis } from './fixtures/mock-api';
 import { ADMIN_EMAIL, ADMIN_PASSWORD } from './fixtures/auth.fixture';
 
 test.describe('Login Flow', () => {
   test.beforeEach(async ({ page }) => {
-    // Set up API mocks before every test
-    await mockAuthApi(page);
-    await mockDashboardApi(page);
+    await mockAllApis(page);
     await page.goto('/login');
   });
 
