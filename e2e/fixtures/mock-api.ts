@@ -119,7 +119,77 @@ export const mockAllApis = async (page: Page): Promise<void> => {
   });
 };
 
-// Auth-only mocks (for login spec where we don't want list mocks interfering)
-export const mockAuthApi = async (page: Page): Promise<void> => {
+// --- Mock review data for review moderation tests ---
+
+const MOCK_PENDING_REVIEW = {
+  id: 'review-001',
+  rating: 4,
+  title: 'Great product',
+  comment: 'Really enjoyed using this product, highly recommend!',
+  status: 'PENDING' as const,
+  adminNote: null,
+  createdAt: '2025-06-01T10:00:00.000Z',
+  updatedAt: '2025-06-01T10:00:00.000Z',
+  user: { id: 'user-001', firstName: 'John', lastName: 'Doe' },
+  product: {
+    id: 'product-001',
+    name: 'Wireless Headphones',
+    slug: 'wireless-headphones',
+  },
+};
+
+const MOCK_APPROVED_REVIEW = {
+  id: 'review-002',
+  rating: 5,
+  title: 'Amazing quality',
+  comment: 'Best purchase this year!',
+  status: 'APPROVED' as const,
+  adminNote: 'Looks genuine',
+  createdAt: '2025-05-15T08:00:00.000Z',
+  updatedAt: '2025-05-16T09:00:00.000Z',
+  user: { id: 'user-002', firstName: 'Jane', lastName: 'Smith' },
+  product: { id: 'product-002', name: 'USB-C Cable', slug: 'usb-c-cable' },
+};
+
+export const MOCK_REVIEWS = [MOCK_PENDING_REVIEW, MOCK_APPROVED_REVIEW];
+
+// Adds review-specific route overrides on top of mockAllApis
+export const mockReviewsApi = async (page: Page): Promise<void> => {
   await mockAllApis(page);
+
+  // Override: GET /reviews/admin — return mock reviews
+  await page.route(`${API_BASE}/reviews/admin*`, async (route) => {
+    if (route.request().method() !== 'GET') return route.fallback();
+
+    return route.fulfill(
+      jsonResponse({
+        success: true,
+        data: MOCK_REVIEWS,
+        meta: { total: MOCK_REVIEWS.length, page: 1, limit: 10, totalPages: 1 },
+        timestamp: new Date().toISOString(),
+      }),
+    );
+  });
+
+  // PATCH /reviews/:id/moderate — return updated review
+  await page.route(`${API_BASE}/reviews/*/moderate`, async (route) => {
+    if (route.request().method() !== 'PATCH') return route.fallback();
+
+    const body = route.request().postDataJSON();
+    const url = new URL(route.request().url());
+    const reviewId = url.pathname.split('/')[2];
+    const review =
+      MOCK_REVIEWS.find((r) => r.id === reviewId) ?? MOCK_PENDING_REVIEW;
+
+    return route.fulfill(
+      jsonResponse(
+        apiResponse({
+          ...review,
+          status: body.status,
+          adminNote: body.adminNote ?? null,
+          updatedAt: new Date().toISOString(),
+        }),
+      ),
+    );
+  });
 };
