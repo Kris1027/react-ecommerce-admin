@@ -1,6 +1,17 @@
 import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
-import { afterAll, afterEach, beforeAll } from 'vitest';
+import { afterAll, afterEach, beforeAll, vi } from 'vitest';
+
+// Mock env before any app modules import it
+vi.mock('@/config/env', () => ({
+  env: {
+    VITE_API_URL: 'http://localhost:3000',
+  },
+}));
+
+// Import after mock so the client configures with mocked env
+import('@/api/client');
+
 import { server } from './mocks/server';
 import { useAuthStore } from '@/stores/auth.store';
 import { useThemeStore } from '@/stores/theme.store';
