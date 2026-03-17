@@ -67,6 +67,16 @@ const toDateInputValue = (isoDate: string): string => {
   return isoDate.slice(0, 10);
 };
 
+const getDefaultDates = (): { validFrom: string; validUntil: string } => {
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return {
+    validFrom: toDateInputValue(today.toISOString()),
+    validUntil: toDateInputValue(tomorrow.toISOString()),
+  };
+};
+
 export const CouponForm = ({ coupon }: CouponFormProps) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -101,8 +111,12 @@ export const CouponForm = ({ coupon }: CouponFormProps) => {
         typeof coupon?.usageLimitPerUser === 'number'
           ? coupon.usageLimitPerUser
           : undefined,
-      validFrom: coupon?.validFrom ? toDateInputValue(coupon.validFrom) : '',
-      validUntil: coupon?.validUntil ? toDateInputValue(coupon.validUntil) : '',
+      validFrom: coupon?.validFrom
+        ? toDateInputValue(coupon.validFrom)
+        : getDefaultDates().validFrom,
+      validUntil: coupon?.validUntil
+        ? toDateInputValue(coupon.validUntil)
+        : getDefaultDates().validUntil,
       isActive: coupon?.isActive ?? true,
     },
   });
