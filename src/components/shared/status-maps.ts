@@ -62,9 +62,42 @@ const COUPON_TYPE_MAP: Record<string, StatusConfig> = {
   },
 } as const;
 
+const STOCK_MOVEMENT_TYPE_MAP: Record<string, StatusConfig> = {
+  ADJUSTMENT: {
+    label: 'Adjustment',
+    variant: 'outline',
+    className: 'border-amber-500 text-amber-600',
+  },
+  RESTOCK: {
+    label: 'Restock',
+    variant: 'outline',
+    className: 'border-green-500 text-green-600',
+  },
+  RETURN: {
+    label: 'Return',
+    variant: 'outline',
+    className: 'border-blue-500 text-blue-600',
+  },
+  SALE: { label: 'Sale', variant: 'default' },
+  RESERVATION: {
+    label: 'Reservation',
+    variant: 'outline',
+    className: 'border-indigo-500 text-indigo-600',
+  },
+  RELEASE: { label: 'Release', variant: 'secondary' },
+} as const;
+
+const COUPON_STATUS_MAP: Record<string, StatusConfig> = {
+  ACTIVE: { label: 'Active', variant: 'default' },
+  INACTIVE: { label: 'Inactive', variant: 'secondary' },
+  EXPIRED: { label: 'Expired', variant: 'destructive' },
+} as const;
+
 export {
   ORDER_STATUS_MAP,
   PAYMENT_STATUS_MAP,
   REVIEW_STATUS_MAP,
   COUPON_TYPE_MAP,
+  STOCK_MOVEMENT_TYPE_MAP,
+  COUPON_STATUS_MAP,
 };
