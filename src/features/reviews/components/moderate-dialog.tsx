@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 import {
   reviewsControllerAdminUpdateMutation,
@@ -65,6 +66,9 @@ const ModerateDialogContent = ({
         queryKey: reviewsControllerFindAllQueryKey(),
       });
       onOpenChange(false);
+      toast.success(
+        status === 'APPROVED' ? 'Review approved' : 'Review rejected',
+      );
     },
   });
 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { Eye, MoreHorizontal, Power, PowerOff, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 import {
   categoriesControllerFindAllQueryKey,
@@ -33,11 +34,14 @@ export const CategoriesActionsCell = ({
 
   const toggleActiveMutation = useMutation({
     ...categoriesControllerUpdateMutation(),
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: categoriesControllerFindAllQueryKey(),
       });
       setShowDeactivate(false);
+      toast.success(
+        variables.body.isActive ? 'Category activated' : 'Category deactivated',
+      );
     },
   });
 
@@ -48,6 +52,7 @@ export const CategoriesActionsCell = ({
         queryKey: categoriesControllerFindAllQueryKey(),
       });
       setShowDelete(false);
+      toast.success('Category deleted');
     },
   });
 

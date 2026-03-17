@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import {
@@ -81,6 +82,7 @@ export const RefundDialog = ({
       });
       reset();
       onOpenChange(false);
+      toast.success('Refund processed');
     },
   });
 

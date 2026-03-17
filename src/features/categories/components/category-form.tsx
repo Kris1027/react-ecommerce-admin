@@ -28,6 +28,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { generateSlug, slugSchema } from '@/lib/utils';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 const categoryFormSchema = z.object({
@@ -185,6 +186,8 @@ export const CategoryForm = ({ category }: CategoryFormProps) => {
           }),
         });
       }
+
+      toast.success('Category updated');
     } else {
       // POST: omit empty optional fields
       const body = {
@@ -202,6 +205,7 @@ export const CategoryForm = ({ category }: CategoryFormProps) => {
         });
       }
 
+      toast.success('Category created');
       navigate({
         to: '/categories/$categorySlug',
         params: { categorySlug: result.data.slug },

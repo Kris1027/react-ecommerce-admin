@@ -2,6 +2,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import {
@@ -131,6 +132,8 @@ export const ShippingForm = ({ method }: ShippingFormProps) => {
           path: { id: method.id },
         }),
       });
+
+      toast.success('Shipping method updated');
     } else {
       const result = await createMutation.mutateAsync({
         body: {
@@ -144,6 +147,7 @@ export const ShippingForm = ({ method }: ShippingFormProps) => {
         },
       });
 
+      toast.success('Shipping method created');
       navigate({
         to: '/shipping/$shippingId',
         params: { shippingId: result.data.id },

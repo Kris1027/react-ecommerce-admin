@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { Edit, MoreHorizontal, Power, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 import {
   shippingControllerDeactivateMutation,
@@ -36,6 +37,7 @@ export const ShippingActionsCell = ({ method }: ShippingActionsCellProps) => {
         queryKey: shippingControllerFindAllQueryKey(),
       });
       setShowDeactivate(false);
+      toast.success('Shipping method deactivated');
     },
   });
 
@@ -46,6 +48,7 @@ export const ShippingActionsCell = ({ method }: ShippingActionsCellProps) => {
         queryKey: shippingControllerFindAllQueryKey(),
       });
       setShowDelete(false);
+      toast.success('Shipping method deleted');
     },
   });
 

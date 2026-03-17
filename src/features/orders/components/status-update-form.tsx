@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { z } from 'zod';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -93,6 +94,7 @@ export const StatusUpdateForm = ({ order }: StatusUpdateFormProps) => {
         queryKey: ordersControllerGetAllOrdersQueryKey(),
       });
       reset();
+      toast.success('Order status updated');
     },
   });
 
