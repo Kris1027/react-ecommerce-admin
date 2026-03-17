@@ -138,6 +138,10 @@ const NOTIFICATION_TYPE_MAP: Record<string, StatusConfig> = {
   PASSWORD_CHANGED: { label: 'Password Changed', variant: 'secondary' },
 } as const;
 
+const NOTIFICATION_TYPES = Object.keys(NOTIFICATION_TYPE_MAP) as Array<
+  keyof typeof NOTIFICATION_TYPE_MAP
+>;
+
 export {
   ORDER_STATUS_MAP,
   PAYMENT_STATUS_MAP,
@@ -146,4 +150,5 @@ export {
   STOCK_MOVEMENT_TYPE_MAP,
   COUPON_STATUS_MAP,
   NOTIFICATION_TYPE_MAP,
+  NOTIFICATION_TYPES,
 };

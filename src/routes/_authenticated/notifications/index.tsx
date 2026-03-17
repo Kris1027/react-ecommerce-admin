@@ -3,13 +3,17 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { z } from 'zod';
 
 import { notificationsControllerFindAllOptions } from '@/api/generated/@tanstack/react-query.gen';
+import type { NotificationDto } from '@/api/generated/types.gen';
 import {
   DataTable,
   DataTablePagination,
   DataTableSkeleton,
 } from '@/components/shared/data-table';
 import { PageHeader } from '@/components/shared/page-header';
-import { NOTIFICATION_TYPE_MAP } from '@/components/shared/status-maps';
+import {
+  NOTIFICATION_TYPE_MAP,
+  NOTIFICATION_TYPES,
+} from '@/components/shared/status-maps';
 import {
   Select,
   SelectContent,
@@ -19,22 +23,6 @@ import {
 } from '@/components/ui/select';
 import { columns } from '@/features/notifications/components/notifications-columns';
 
-const NOTIFICATION_TYPES = [
-  'ORDER_CREATED',
-  'ORDER_CONFIRMED',
-  'ORDER_SHIPPED',
-  'ORDER_DELIVERED',
-  'ORDER_CANCELLED',
-  'PAYMENT_SUCCEEDED',
-  'PAYMENT_FAILED',
-  'REFUND_INITIATED',
-  'REFUND_COMPLETED',
-  'REFUND_FAILED',
-  'LOW_STOCK',
-  'WELCOME',
-  'PASSWORD_CHANGED',
-] as const;
-
 const READ_STATUSES = ['true', 'false'] as const;
 
 const notificationsSearchSchema = z.object({
@@ -42,7 +30,7 @@ const notificationsSearchSchema = z.object({
   limit: z.coerce.number().int().positive().default(10),
   sortBy: z.string().optional(),
   sortOrder: z.enum(['asc', 'desc']).optional(),
-  type: z.enum(NOTIFICATION_TYPES).optional(),
+  type: z.string().optional(),
   isRead: z.enum(READ_STATUSES).optional(),
 });
 
@@ -62,7 +50,7 @@ function NotificationsPage() {
         limit: String(search.limit),
         sortBy: search.sortBy,
         sortOrder: search.sortOrder,
-        type: search.type,
+        type: search.type as NotificationDto['type'] | undefined,
         isRead: search.isRead,
       },
     }),

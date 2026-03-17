@@ -33,7 +33,7 @@ export const columns: ColumnDef<NotificationDto, unknown>[] = [
     accessorKey: 'body',
     header: 'Message',
     cell: ({ getValue }) => (
-      <span className='text-muted-foreground max-w-xs truncate text-sm'>
+      <span className='text-muted-foreground block max-w-xs truncate text-sm'>
         {getValue() as string}
       </span>
     ),
