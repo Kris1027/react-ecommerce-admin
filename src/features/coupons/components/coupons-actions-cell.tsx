@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { Edit, MoreHorizontal, Power, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 import {
   couponsControllerDeactivateMutation,
@@ -36,6 +37,7 @@ export const CouponsActionsCell = ({ coupon }: CouponsActionsCellProps) => {
         queryKey: couponsControllerFindAllQueryKey(),
       });
       setShowDeactivate(false);
+      toast.success('Coupon deactivated');
     },
   });
 
@@ -46,6 +48,7 @@ export const CouponsActionsCell = ({ coupon }: CouponsActionsCellProps) => {
         queryKey: couponsControllerFindAllQueryKey(),
       });
       setShowDelete(false);
+      toast.success('Coupon deleted');
     },
   });
 

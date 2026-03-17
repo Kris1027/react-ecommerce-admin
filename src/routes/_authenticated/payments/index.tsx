@@ -6,6 +6,7 @@ import {
   keepPreviousData,
 } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import {
@@ -79,6 +80,7 @@ function PaymentsPage() {
         queryKey: paymentsControllerGetAllPaymentsQueryKey(),
       });
       setShowExpireConfirm(false);
+      toast.success('Abandoned payments expired');
     },
   });
 

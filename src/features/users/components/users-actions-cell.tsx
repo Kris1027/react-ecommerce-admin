@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { Eye, MoreHorizontal, Trash2, UserCheck, UserX } from 'lucide-react';
+import { toast } from 'sonner';
 
 import {
   usersControllerAdminUpdateUserMutation,
@@ -39,6 +40,7 @@ export const UsersActionsCell = ({ user }: UsersActionsCellProps) => {
       queryClient.invalidateQueries({
         queryKey: usersControllerFindAllQueryKey(),
       });
+      toast.success('User activated');
     },
   });
 
@@ -49,6 +51,7 @@ export const UsersActionsCell = ({ user }: UsersActionsCellProps) => {
         queryKey: usersControllerFindAllQueryKey(),
       });
       setShowDeactivate(false);
+      toast.success('User deactivated');
     },
   });
 
@@ -59,6 +62,7 @@ export const UsersActionsCell = ({ user }: UsersActionsCellProps) => {
         queryKey: usersControllerFindAllQueryKey(),
       });
       setShowDelete(false);
+      toast.success('User deleted');
     },
   });
 

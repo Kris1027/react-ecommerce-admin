@@ -2,6 +2,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import {
@@ -206,6 +207,8 @@ export const CouponForm = ({ coupon }: CouponFormProps) => {
           path: { id: coupon.id },
         }),
       });
+
+      toast.success('Coupon updated');
     } else {
       const result = await createMutation.mutateAsync({
         body: {
@@ -223,6 +226,7 @@ export const CouponForm = ({ coupon }: CouponFormProps) => {
         },
       });
 
+      toast.success('Coupon created');
       navigate({
         to: '/coupons/$couponId',
         params: { couponId: result.data.id },

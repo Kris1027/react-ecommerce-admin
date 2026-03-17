@@ -30,6 +30,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { generateSlug, slugSchema, priceSchema } from '@/lib/utils';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 const priceOptionalSchema = z
@@ -148,6 +149,7 @@ export const ProductForm = ({ product }: ProductFormProps) => {
           }),
         });
       }
+      toast.success('Image removed');
     },
   });
 
@@ -217,6 +219,8 @@ export const ProductForm = ({ product }: ProductFormProps) => {
           }),
         });
       }
+
+      toast.success('Product updated');
     } else {
       // POST: omit empty optional fields
       const body = {
@@ -235,6 +239,7 @@ export const ProductForm = ({ product }: ProductFormProps) => {
         });
       }
 
+      toast.success('Product created');
       navigate({
         to: '/products/$productSlug',
         params: { productSlug: result.data.slug },

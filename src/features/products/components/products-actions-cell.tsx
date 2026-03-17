@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { Eye, MoreHorizontal, Power, PowerOff, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 import {
   productsControllerFindAllQueryKey,
@@ -31,11 +32,14 @@ export const ProductsActionsCell = ({ product }: ProductsActionsCellProps) => {
 
   const toggleActiveMutation = useMutation({
     ...productsControllerUpdateMutation(),
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: productsControllerFindAllQueryKey(),
       });
       setShowDeactivate(false);
+      toast.success(
+        variables.body.isActive ? 'Product activated' : 'Product deactivated',
+      );
     },
   });
 
@@ -46,6 +50,7 @@ export const ProductsActionsCell = ({ product }: ProductsActionsCellProps) => {
         queryKey: productsControllerFindAllQueryKey(),
       });
       setShowDelete(false);
+      toast.success('Product deleted');
     },
   });
 

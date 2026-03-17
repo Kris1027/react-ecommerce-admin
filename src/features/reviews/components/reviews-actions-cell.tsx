@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Check, MoreHorizontal, Scale, Trash2, X } from 'lucide-react';
+import { toast } from 'sonner';
 
 import {
   reviewsControllerAdminUpdateMutation,
@@ -30,10 +31,15 @@ export const ReviewsActionsCell = ({ review }: ReviewsActionsCellProps) => {
 
   const moderateMutation = useMutation({
     ...reviewsControllerAdminUpdateMutation(),
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: reviewsControllerFindAllQueryKey(),
       });
+      toast.success(
+        variables.body.status === 'APPROVED'
+          ? 'Review approved'
+          : 'Review rejected',
+      );
     },
   });
 
@@ -44,6 +50,7 @@ export const ReviewsActionsCell = ({ review }: ReviewsActionsCellProps) => {
         queryKey: reviewsControllerFindAllQueryKey(),
       });
       setShowDelete(false);
+      toast.success('Review deleted');
     },
   });
 
