@@ -89,6 +89,11 @@ const STOCK_MOVEMENT_TYPE_MAP: Record<string, StatusConfig> = {
 
 const COUPON_STATUS_MAP: Record<string, StatusConfig> = {
   ACTIVE: { label: 'Active', variant: 'default' },
+  SCHEDULED: {
+    label: 'Scheduled',
+    variant: 'outline',
+    className: 'border-blue-500 text-blue-600',
+  },
   INACTIVE: { label: 'Inactive', variant: 'secondary' },
   EXPIRED: { label: 'Expired', variant: 'destructive' },
 } as const;

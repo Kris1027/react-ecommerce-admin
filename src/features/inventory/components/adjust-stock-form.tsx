@@ -27,7 +27,7 @@ const ADJUSTMENT_TYPES = ['ADJUSTMENT', 'RESTOCK', 'RETURN'] as const;
 const adjustStockSchema = z.object({
   quantity: z
     .number({ error: 'Quantity is required' })
-    .int({ error: 'Must be a whole number' })
+    .int('Must be a whole number')
     .refine((v) => v !== 0, 'Quantity cannot be zero'),
   type: z.enum(ADJUSTMENT_TYPES),
   reason: z.string().max(500, 'Reason too long').optional(),
@@ -135,7 +135,12 @@ export const AdjustStockForm = ({ productId }: AdjustStockFormProps) => {
             <Input
               id='quantity'
               type='number'
-              {...register('quantity', { valueAsNumber: true })}
+              {...register('quantity', {
+                setValueAs: (v: string) => {
+                  const n = Number(v);
+                  return v === '' || Number.isNaN(n) ? undefined : n;
+                },
+              })}
             />
           </FormField>
 

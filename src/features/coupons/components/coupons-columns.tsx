@@ -13,7 +13,9 @@ import { CouponsActionsCell } from './coupons-actions-cell';
 
 const getCouponStatus = (coupon: CouponDto): string => {
   if (!coupon.isActive) return 'INACTIVE';
-  if (new Date(coupon.validUntil) < new Date()) return 'EXPIRED';
+  const now = new Date();
+  if (new Date(coupon.validUntil) < now) return 'EXPIRED';
+  if (new Date(coupon.validFrom) > now) return 'SCHEDULED';
   return 'ACTIVE';
 };
 

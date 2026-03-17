@@ -31,8 +31,9 @@ const COUPON_TYPES = ['PERCENTAGE', 'FIXED_AMOUNT'] as const;
 const couponFormSchema = z.object({
   code: z
     .string()
-    .min(2, 'Code must be at least 2 characters')
-    .max(50, 'Code too long'),
+    .min(3, 'Code must be at least 3 characters')
+    .max(30, 'Code must be at most 30 characters')
+    .regex(/^[A-Z0-9-]+$/i, 'Only letters, numbers, and hyphens allowed'),
   description: z.string().max(500, 'Description too long').optional(),
   type: z.enum(COUPON_TYPES),
   value: priceSchema,
@@ -67,13 +68,20 @@ const toDateInputValue = (isoDate: string): string => {
   return isoDate.slice(0, 10);
 };
 
+const toLocalDateString = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const getDefaultDates = (): { validFrom: string; validUntil: string } => {
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
   return {
-    validFrom: toDateInputValue(today.toISOString()),
-    validUntil: toDateInputValue(tomorrow.toISOString()),
+    validFrom: toLocalDateString(today),
+    validUntil: toLocalDateString(tomorrow),
   };
 };
 
