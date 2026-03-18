@@ -38,19 +38,21 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
               An unexpected error occurred. Please try refreshing the page.
             </p>
           </div>
-          {this.state.error && (
+          {import.meta.env.DEV && this.state.error && (
             <pre className='bg-muted max-w-lg overflow-auto rounded-md p-4 text-sm'>
               {this.state.error.message}
             </pre>
           )}
           <div className='flex gap-2'>
             <button
+              type='button'
               onClick={this.handleReset}
               className='bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 text-sm font-medium'
             >
               Try again
             </button>
             <button
+              type='button'
               onClick={() => window.location.reload()}
               className='bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-md px-4 py-2 text-sm font-medium'
             >

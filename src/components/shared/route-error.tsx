@@ -19,6 +19,7 @@ const RouteError = ({ error, reset }: ErrorComponentProps) => {
         </p>
       </div>
       <button
+        type='button'
         onClick={handleRetry}
         className='bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 text-sm font-medium'
       >
