@@ -36,6 +36,7 @@ function CategoriesPage() {
         limit: String(search.limit),
         sortBy: search.sortBy,
         sortOrder: search.sortOrder,
+        isActive: 'all',
       },
     }),
     placeholderData: keepPreviousData,

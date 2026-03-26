@@ -51,6 +51,7 @@ function ProductsPage() {
         sortOrder: search.sortOrder,
         categoryId: search.categoryId,
         search: search.search,
+        isActive: 'all',
       },
     }),
     placeholderData: keepPreviousData,
@@ -58,7 +59,7 @@ function ProductsPage() {
 
   const { data: categoriesData } = useQuery({
     ...categoriesControllerFindAllOptions({
-      query: { limit: '100' },
+      query: { limit: '100', isActive: 'all' },
     }),
   });
 

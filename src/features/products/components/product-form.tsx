@@ -65,7 +65,7 @@ export const ProductForm = ({ product }: ProductFormProps) => {
 
   const { data: categoriesData } = useQuery({
     ...categoriesControllerFindAllOptions({
-      query: { limit: '100' },
+      query: { limit: '100', isActive: 'all' },
     }),
   });
 

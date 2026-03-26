@@ -53,7 +53,7 @@ export const CategoryForm = ({ category }: CategoryFormProps) => {
 
   const { data: categoriesData } = useQuery({
     ...categoriesControllerFindAllOptions({
-      query: { limit: '100' },
+      query: { limit: '100', isActive: 'all' },
     }),
   });
 
