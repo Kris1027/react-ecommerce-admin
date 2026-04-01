@@ -49,8 +49,13 @@ const jsonResponse = (data: unknown, status = 200) => ({
   body: JSON.stringify(data),
 });
 
+// Track pages that already have the catch-all registered
+const initializedPages = new WeakSet<Page>();
+
 // Single catch-all that intercepts ALL API requests and routes by path
 export const mockAllApis = async (page: Page): Promise<void> => {
+  if (initializedPages.has(page)) return;
+  initializedPages.add(page);
   await page.route(`${API_BASE}/**`, async (route) => {
     const request = route.request();
     const url = new URL(request.url());

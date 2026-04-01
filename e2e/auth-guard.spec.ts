@@ -62,11 +62,9 @@ test.describe('Auth Guard', () => {
     ).toBeVisible();
   });
 
-  test('should redirect to requested page after login', async ({
+  test('should land on dashboard after authentication', async ({
     authenticatedPage,
   }) => {
-    // Already authenticated — just verify that the auth flow completed
-    // The login.spec.ts covers the redirect case for unauthenticated users
     await expect(authenticatedPage).toHaveURL('/');
   });
 });

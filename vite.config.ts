@@ -6,26 +6,31 @@ import tailwindcss from '@tailwindcss/vite';
 import { visualizer } from 'rollup-plugin-visualizer';
 import path from 'node:path';
 
-const CSP_CONTENT = [
-  "default-src 'self'",
-  "script-src 'self'",
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' https://res.cloudinary.com data:",
-  "font-src 'self'",
-  "connect-src 'self' http://localhost:3000",
-  "frame-ancestors 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-].join('; ');
+const buildCspContent = (apiUrl: string): string => {
+  const apiOrigin = new URL(apiUrl).origin;
+  return [
+    "default-src 'self'",
+    "script-src 'self'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' https://res.cloudinary.com data:",
+    "font-src 'self'",
+    `connect-src 'self' ${apiOrigin}`,
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+  ].join('; ');
+};
 
 const cspMetaTag = (): Plugin => ({
   name: 'csp-meta-tag',
   transformIndexHtml: {
     order: 'post',
     handler(html) {
+      const apiUrl = process.env.VITE_API_URL ?? 'http://localhost:3000';
+      const csp = buildCspContent(apiUrl);
       return html.replace(
         '</head>',
-        `    <meta http-equiv="Content-Security-Policy" content="${CSP_CONTENT}" />\n  </head>`,
+        `    <meta http-equiv="Content-Security-Policy" content="${csp}" />\n  </head>`,
       );
     },
   },
