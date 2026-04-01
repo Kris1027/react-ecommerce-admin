@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 
-const API_BASE = 'http://localhost:3000';
+const API_BASE = 'http://localhost:3000/api/v1';
 
 // Shared admin credentials — single source of truth for all E2E tests
 export const ADMIN_EMAIL = 'admin@example.com';
@@ -59,7 +59,7 @@ export const mockAllApis = async (page: Page): Promise<void> => {
 
     // --- Auth endpoints ---
 
-    if (path === '/auth/login' && method === 'POST') {
+    if (path === '/api/v1/auth/login' && method === 'POST') {
       const body = request.postDataJSON();
       if (body.email !== ADMIN_EMAIL || body.password !== ADMIN_PASSWORD) {
         return route.fulfill(
@@ -82,7 +82,7 @@ export const mockAllApis = async (page: Page): Promise<void> => {
       );
     }
 
-    if (path === '/auth/refresh' && method === 'POST') {
+    if (path === '/api/v1/auth/refresh' && method === 'POST') {
       return route.fulfill(
         jsonResponse(
           apiResponse({
@@ -93,19 +93,19 @@ export const mockAllApis = async (page: Page): Promise<void> => {
       );
     }
 
-    if (path === '/auth/logout' && method === 'POST') {
+    if (path === '/api/v1/auth/logout' && method === 'POST') {
       return route.fulfill(jsonResponse(apiResponse(null)));
     }
 
     // --- User profile ---
 
-    if (path === '/users/me' && method === 'GET') {
+    if (path === '/api/v1/users/me' && method === 'GET') {
       return route.fulfill(jsonResponse(apiResponse(MOCK_ADMIN_USER)));
     }
 
     // --- Notification count (non-paginated) ---
 
-    if (path === '/notifications/unread-count' && method === 'GET') {
+    if (path === '/api/v1/notifications/unread-count' && method === 'GET') {
       return route.fulfill(jsonResponse(apiResponse({ count: 0 })));
     }
 
@@ -157,8 +157,8 @@ const MOCK_PRODUCT = {
 export const mockProductsApi = async (page: Page): Promise<void> => {
   await mockAllApis(page);
 
-  // GET /categories — return mock categories (for form dropdown)
-  await page.route(`${API_BASE}/categories?**`, async (route) => {
+  // GET /categories and /categories/manage — return mock categories
+  const categoriesHandler = async (route: import('@playwright/test').Route) => {
     if (route.request().method() !== 'GET') return route.fallback();
 
     return route.fulfill(
@@ -169,9 +169,23 @@ export const mockProductsApi = async (page: Page): Promise<void> => {
         timestamp: new Date().toISOString(),
       }),
     );
-  });
+  };
+  await page.route(`${API_BASE}/categories?**`, categoriesHandler);
+  await page.route(`${API_BASE}/categories/manage?**`, categoriesHandler);
 
-  // GET /products — return mock products list
+  // GET /products and /products/manage — return mock products list
+  await page.route(`${API_BASE}/products/manage?**`, async (route) => {
+    if (route.request().method() !== 'GET') return route.fallback();
+
+    return route.fulfill(
+      jsonResponse({
+        success: true,
+        data: [MOCK_PRODUCT],
+        meta: { total: 1, page: 1, limit: 10, totalPages: 1 },
+        timestamp: new Date().toISOString(),
+      }),
+    );
+  });
   await page.route(`${API_BASE}/products?**`, async (route) => {
     if (route.request().method() !== 'GET') return route.fallback();
 
@@ -329,6 +343,112 @@ export const mockOrdersApi = async (page: Page): Promise<void> => {
   });
 };
 
+// --- Mock category data for category CRUD tests ---
+
+const MOCK_CATEGORY_DETAIL = {
+  id: 'cat-001',
+  name: 'Electronics',
+  slug: 'electronics',
+  description: 'Electronic devices and accessories',
+  isActive: true,
+  sortOrder: 0,
+  parentId: null,
+  image: null,
+  createdAt: '2025-01-01T00:00:00.000Z',
+  updatedAt: '2025-01-01T00:00:00.000Z',
+};
+
+const MOCK_CATEGORY_2 = {
+  id: 'cat-002',
+  name: 'Clothing',
+  slug: 'clothing',
+  description: 'Apparel and fashion items',
+  isActive: true,
+  sortOrder: 1,
+  parentId: null,
+  image: null,
+  createdAt: '2025-02-01T00:00:00.000Z',
+  updatedAt: '2025-02-01T00:00:00.000Z',
+};
+
+export const MOCK_CATEGORIES = [MOCK_CATEGORY_DETAIL, MOCK_CATEGORY_2];
+
+export const mockCategoriesApi = async (page: Page): Promise<void> => {
+  await mockAllApis(page);
+
+  // GET /categories and /categories/manage — return mock categories list
+  const categoriesListHandler = async (
+    route: import('@playwright/test').Route,
+  ) => {
+    if (route.request().method() !== 'GET') return route.fallback();
+
+    return route.fulfill(
+      jsonResponse({
+        success: true,
+        data: MOCK_CATEGORIES,
+        meta: {
+          total: MOCK_CATEGORIES.length,
+          page: 1,
+          limit: 10,
+          totalPages: 1,
+        },
+        timestamp: new Date().toISOString(),
+      }),
+    );
+  };
+  await page.route(`${API_BASE}/categories?**`, categoriesListHandler);
+  await page.route(`${API_BASE}/categories/manage?**`, categoriesListHandler);
+
+  // GET /categories/:slug — return mock category detail
+  await page.route(`${API_BASE}/categories/*`, async (route) => {
+    const request = route.request();
+    if (request.method() !== 'GET') return route.fallback();
+    const url = new URL(request.url());
+    if (url.search) return route.fallback();
+
+    return route.fulfill(jsonResponse(apiResponse(MOCK_CATEGORY_DETAIL)));
+  });
+
+  // POST /categories — create category
+  await page.route(`${API_BASE}/categories`, async (route) => {
+    if (route.request().method() !== 'POST') return route.fallback();
+
+    return route.fulfill(
+      jsonResponse(
+        apiResponse({
+          ...MOCK_CATEGORY_DETAIL,
+          id: 'cat-new',
+          name: 'Test Category',
+          slug: 'test-category',
+        }),
+      ),
+    );
+  });
+
+  // PATCH /categories/:id — update category
+  await page.route(`${API_BASE}/categories/*`, async (route) => {
+    if (route.request().method() !== 'PATCH') return route.fallback();
+
+    return route.fulfill(jsonResponse(apiResponse(MOCK_CATEGORY_DETAIL)));
+  });
+
+  // POST /categories/:id/deactivate — deactivate category
+  await page.route(`${API_BASE}/categories/*/deactivate`, async (route) => {
+    if (route.request().method() !== 'POST') return route.fallback();
+
+    return route.fulfill(
+      jsonResponse(apiResponse({ ...MOCK_CATEGORY_DETAIL, isActive: false })),
+    );
+  });
+
+  // DELETE /categories/:id — delete category
+  await page.route(`${API_BASE}/categories/*`, async (route) => {
+    if (route.request().method() !== 'DELETE') return route.fallback();
+
+    return route.fulfill(jsonResponse(apiResponse(null)));
+  });
+};
+
 // --- Mock review data for review moderation tests ---
 
 const MOCK_PENDING_REVIEW = {
@@ -387,7 +507,7 @@ export const mockReviewsApi = async (page: Page): Promise<void> => {
 
     const body = route.request().postDataJSON();
     const url = new URL(route.request().url());
-    const reviewId = url.pathname.split('/')[2];
+    const reviewId = url.pathname.split('/')[4];
     const review =
       MOCK_REVIEWS.find((r) => r.id === reviewId) ?? MOCK_PENDING_REVIEW;
 
