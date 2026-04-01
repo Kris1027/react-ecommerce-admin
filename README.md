@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/Kris1027/react-ecommerce-admin/actions/workflows/ci.yml/badge.svg)](https://github.com/Kris1027/react-ecommerce-admin/actions/workflows/ci.yml)
 
-A production-ready **admin dashboard** for the [NestJS Ecommerce API](https://github.com/Kris1027/nestjs-ecommerce-api), built with React 19, TypeScript 5.9, TanStack Router, TanStack Query, and shadcn/ui. Features auto-generated API client from OpenAPI spec, secure JWT authentication with token rotation, real-time notifications, and 80+ unit tests.
+A production-ready **admin dashboard** for the [NestJS Ecommerce API](https://github.com/Kris1027/nestjs-ecommerce-api), built with React 19, TypeScript 5.9, TanStack Router, TanStack Query, and shadcn/ui. Features auto-generated API client from OpenAPI spec, secure JWT authentication with token rotation, real-time notifications, 80+ unit tests, and 45 E2E tests.
 
 ---
 
@@ -105,10 +105,13 @@ A production-ready **admin dashboard** for the [NestJS Ecommerce API](https://gi
 - 401 interceptor with automatic token refresh and request queue
 - Multi-tab sync via BroadcastChannel (logout/token refresh)
 - Admin role validation (rejects non-admin users)
+- Security headers via `vercel.json` — CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
+- CSP meta tag fallback for non-Vercel environments (injected at build time)
 
 ### UI/UX
 
 - Dark/light/system theme with persistence
+- Per-route page titles for multi-tab UX (`{Page} | Admin`)
 - Collapsible sidebar with mobile responsive drawer
 - Server-side paginated data tables with column visibility, faceted filters
 - Loading skeletons, empty states, confirmation dialogs
@@ -203,7 +206,7 @@ src/
 │   ├── shipping/               # Shipping method CRUD
 │   ├── inventory/              # Stock management, movement history
 │   └── notifications/          # Notification bell, list
-├── hooks/                      # useDebounce, useMediaQuery, useOnlineStatus
+├── hooks/                      # useDocumentTitle, useDebounce, useMediaQuery, useOnlineStatus
 ├── lib/
 │   ├── api-error.ts            # API error parsing utility
 │   ├── query-client.ts         # TanStack Query client config
@@ -231,9 +234,10 @@ pnpm test:e2e
 ```
 
 - **14 test suites** with **80+ unit tests**
+- **8 E2E test suites** with **45 Playwright tests**
 - MSW v2 for API mocking (handlers per domain)
 - Fresh QueryClient per test (no cache leakage)
-- E2E scenarios: login flow, product CRUD, order workflow, review moderation, full navigation
+- E2E scenarios: login flow, auth guard, product CRUD, category CRUD, order workflow, review moderation, search/filter, full navigation
 
 ---
 
@@ -276,6 +280,10 @@ All environment variables are validated at build time via Zod. The app will not 
 - CSRF protection via SameSite=Strict + custom header
 - Multi-tab session sync (logout propagation)
 - Admin role enforcement (rejects non-admin users at login)
+- Content Security Policy (CSP) — restricts script, style, image, and connect sources
+- HSTS with 2-year max-age, includeSubDomains, and preload
+- X-Frame-Options: DENY — prevents clickjacking
+- Permissions-Policy — disables camera, microphone, geolocation
 - No `any` types — strict TypeScript with ESLint enforcement
 - React Compiler lint rules for purity and immutability
 - Bundle size budgets to catch accidental large imports
