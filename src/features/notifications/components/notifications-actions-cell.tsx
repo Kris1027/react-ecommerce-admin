@@ -69,6 +69,7 @@ const NotificationsActionsCell = ({
         <Button
           variant='ghost'
           size='sm'
+          aria-label='Mark as unread'
           disabled={isPending}
           onClick={() =>
             markAsUnreadMutation.mutate({ path: { id: notification.id } })
@@ -81,6 +82,7 @@ const NotificationsActionsCell = ({
         <Button
           variant='ghost'
           size='sm'
+          aria-label='Mark as read'
           disabled={isPending}
           onClick={() =>
             markAsReadMutation.mutate({ path: { id: notification.id } })
@@ -93,6 +95,7 @@ const NotificationsActionsCell = ({
       <Button
         variant='ghost'
         size='sm'
+        aria-label='Delete notification'
         disabled={isPending}
         onClick={() => deleteMutation.mutate({ path: { id: notification.id } })}
       >

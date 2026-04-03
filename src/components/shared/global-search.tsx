@@ -127,6 +127,7 @@ const GlobalSearch = () => {
       <Button
         variant='outline'
         onClick={() => setOpen(true)}
+        aria-label='Open global search'
         className='text-muted-foreground h-9 w-full justify-start gap-2 px-3 text-sm font-normal'
       >
         <Search size={16} />
@@ -221,6 +222,7 @@ const SelectedSearch = ({
       <div className='flex items-center gap-2 border-b px-3 py-2'>
         <button
           type='button'
+          aria-label='Back to search sections'
           onClick={onBack}
           className='text-muted-foreground hover:text-foreground'
         >
