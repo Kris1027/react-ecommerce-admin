@@ -15,7 +15,6 @@ import {
 } from '@/components/shared/data-table';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -106,27 +105,7 @@ function ProductsPage() {
         </Button>
       </PageHeader>
 
-      <div className='flex items-center gap-4'>
-        <Input
-          key={search.search}
-          placeholder='Search products...'
-          defaultValue={search.search ?? ''}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              handleFilterChange({
-                search: e.currentTarget.value || undefined,
-              });
-            }
-          }}
-          onBlur={(e) => {
-            const value = e.target.value || undefined;
-            if (value !== search.search) {
-              handleFilterChange({ search: value });
-            }
-          }}
-          className='max-w-sm'
-        />
-
+      <div className='flex flex-wrap items-center gap-4'>
         <Select
           value={search.categoryId ?? 'all'}
           onValueChange={(value) =>
@@ -135,7 +114,7 @@ function ProductsPage() {
             })
           }
         >
-          <SelectTrigger className='w-48'>
+          <SelectTrigger className='w-full sm:w-48'>
             <SelectValue placeholder='All categories' />
           </SelectTrigger>
           <SelectContent>

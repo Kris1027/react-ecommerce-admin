@@ -1,5 +1,6 @@
 import { useNavigate } from '@tanstack/react-router';
 import { LogOut, Menu, Monitor, Moon, Sun, User } from 'lucide-react';
+import { GlobalSearch } from '@/components/shared/global-search';
 import { useAuthStore } from '@/stores/auth.store';
 import { useThemeStore } from '@/stores/theme.store';
 import { logout } from '@/features/auth/api/auth.api';
@@ -39,16 +40,17 @@ export const Header = ({ onMobileMenuToggle }: HeaderProps) => {
 
   return (
     <header className='bg-background flex h-14 items-center justify-between border-b px-4'>
-      <div className='flex items-center gap-2'>
+      <div className='flex min-w-0 flex-1 items-center gap-2'>
         <Button
           variant='ghost'
           size='icon'
-          className='md:hidden'
+          className='shrink-0 md:hidden'
           onClick={onMobileMenuToggle}
           aria-label='Open navigation menu'
         >
           <Menu size={20} />
         </Button>
+        <GlobalSearch />
       </div>
 
       <div className='flex items-center gap-1'>
