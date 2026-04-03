@@ -1,6 +1,6 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
-import { Plus, X } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { z } from 'zod';
 
 import {
@@ -15,7 +15,6 @@ import {
 } from '@/components/shared/data-table';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -107,37 +106,6 @@ function ProductsPage() {
       </PageHeader>
 
       <div className='flex flex-wrap items-center gap-4'>
-        <div className='relative w-full sm:max-w-sm'>
-          <Input
-            key={search.search}
-            placeholder='Search products...'
-            defaultValue={search.search ?? ''}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleFilterChange({
-                  search: e.currentTarget.value || undefined,
-                });
-              }
-            }}
-            onBlur={(e) => {
-              const value = e.target.value || undefined;
-              if (value !== search.search) {
-                handleFilterChange({ search: value });
-              }
-            }}
-            className={search.search ? 'pr-8' : ''}
-          />
-          {search.search && (
-            <button
-              type='button'
-              onClick={() => handleFilterChange({ search: undefined })}
-              className='text-muted-foreground hover:text-foreground absolute top-1/2 right-2 -translate-y-1/2'
-            >
-              <X size={16} />
-            </button>
-          )}
-        </div>
-
         <Select
           value={search.categoryId ?? 'all'}
           onValueChange={(value) =>
