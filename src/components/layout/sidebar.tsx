@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Link, useMatchRoute } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
 import {
   Box,
   ChevronLeft,
@@ -151,21 +151,21 @@ type NavLinkProps = {
 };
 
 const NavLink = ({ item, isCollapsed }: NavLinkProps) => {
-  const matchRoute = useMatchRoute();
-  const isActive =
-    item.to === '/'
-      ? matchRoute({ to: item.to })
-      : matchRoute({ to: item.to, fuzzy: true });
-
   const linkContent = (
     <Link
       to={item.to}
+      activeOptions={{
+        exact: item.to === '/',
+        includeSearch: false,
+      }}
       className={cn(
         'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
         'hover:bg-accent hover:text-accent-foreground',
-        isActive && 'bg-accent text-accent-foreground',
         isCollapsed && 'justify-center px-0',
       )}
+      activeProps={{
+        className: 'bg-accent text-accent-foreground',
+      }}
     >
       {item.icon}
       {!isCollapsed && <span>{item.label}</span>}
