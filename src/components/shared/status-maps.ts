@@ -98,7 +98,7 @@ const COUPON_STATUS_MAP: Record<string, StatusConfig> = {
   EXPIRED: { label: 'Expired', variant: 'destructive' },
 } as const;
 
-const NOTIFICATION_TYPE_MAP: Record<string, StatusConfig> = {
+const NOTIFICATION_TYPE_MAP = {
   ORDER_CREATED: {
     label: 'Order Created',
     variant: 'outline',
@@ -146,11 +146,16 @@ const NOTIFICATION_TYPE_MAP: Record<string, StatusConfig> = {
   },
   WELCOME: { label: 'Welcome', variant: 'secondary' },
   PASSWORD_CHANGED: { label: 'Password Changed', variant: 'secondary' },
-} as const;
+} as const satisfies Record<string, StatusConfig>;
 
 const NOTIFICATION_TYPES = Object.keys(NOTIFICATION_TYPE_MAP) as Array<
   keyof typeof NOTIFICATION_TYPE_MAP
 >;
+
+const NOTIFICATION_TYPES_TUPLE = NOTIFICATION_TYPES as [
+  keyof typeof NOTIFICATION_TYPE_MAP,
+  ...(keyof typeof NOTIFICATION_TYPE_MAP)[],
+];
 
 export {
   ORDER_STATUS_MAP,
@@ -161,4 +166,5 @@ export {
   COUPON_STATUS_MAP,
   NOTIFICATION_TYPE_MAP,
   NOTIFICATION_TYPES,
+  NOTIFICATION_TYPES_TUPLE,
 };

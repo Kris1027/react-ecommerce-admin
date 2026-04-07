@@ -34,6 +34,8 @@ export const columns: ColumnDef<AdminNotificationDto, unknown>[] = [
           to='/users/$userId'
           params={{ userId }}
           className='text-primary hover:underline font-mono text-xs'
+          aria-label={`View user ${userId}`}
+          title={userId}
         >
           {userId.slice(0, 8)}...
         </Link>

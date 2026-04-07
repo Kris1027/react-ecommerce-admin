@@ -18,7 +18,6 @@ import {
   notificationsControllerGetUnreadCountQueryKey,
 } from '@/api/generated/@tanstack/react-query.gen';
 import { useDocumentTitle } from '@/hooks/use-document-title';
-import type { AdminNotificationDto } from '@/api/generated/types.gen';
 import {
   DataTable,
   DataTablePagination,
@@ -29,6 +28,7 @@ import { Button } from '@/components/ui/button';
 import {
   NOTIFICATION_TYPE_MAP,
   NOTIFICATION_TYPES,
+  NOTIFICATION_TYPES_TUPLE,
 } from '@/components/shared/status-maps';
 import {
   Select,
@@ -46,7 +46,7 @@ const notificationsSearchSchema = z.object({
   limit: z.coerce.number().int().positive().default(10),
   sortBy: z.string().optional(),
   sortOrder: z.enum(['asc', 'desc']).optional(),
-  type: z.string().optional(),
+  type: z.enum(NOTIFICATION_TYPES_TUPLE).optional(),
   isRead: z.enum(READ_STATUSES).optional(),
 });
 
@@ -100,7 +100,7 @@ function NotificationsPage() {
         limit: String(search.limit),
         sortBy: search.sortBy,
         sortOrder: search.sortOrder,
-        type: search.type as AdminNotificationDto['type'] | undefined,
+        type: search.type,
         isRead: search.isRead,
       },
     }),
