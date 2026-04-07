@@ -95,10 +95,11 @@ A production-ready **admin dashboard** for the [NestJS Ecommerce API](https://gi
 ### Notifications
 
 - Notification bell with unread count (polling)
-- Notification list with type and read status filters
+- Admin notification management with dedicated admin endpoints (no ownership restrictions)
+- Notification list with type and read status filters, user column linking to user detail
 - Mark as read / mark as unread toggle per notification
-- Mark all as read (bell popover and notifications page)
-- Delete individual notifications and delete all read
+- Mark all as read (bell popover and admin-wide on notifications page)
+- Delete individual notifications and delete all read across all users
 
 ### Authentication & Security
 
