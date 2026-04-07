@@ -1,4 +1,5 @@
 import type { ColumnDef } from '@tanstack/react-table';
+import { Link } from '@tanstack/react-router';
 import { format } from 'date-fns';
 
 import type { AdminNotificationDto } from '@/api/generated/types.gen';
@@ -20,6 +21,24 @@ export const columns: ColumnDef<AdminNotificationDto, unknown>[] = [
         statusMap={NOTIFICATION_TYPE_MAP}
       />
     ),
+  },
+  {
+    accessorKey: 'userId',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='User' />
+    ),
+    cell: ({ getValue }) => {
+      const userId = getValue() as string;
+      return (
+        <Link
+          to='/users/$userId'
+          params={{ userId }}
+          className='text-primary hover:underline font-mono text-xs'
+        >
+          {userId.slice(0, 8)}...
+        </Link>
+      );
+    },
   },
   {
     accessorKey: 'title',
