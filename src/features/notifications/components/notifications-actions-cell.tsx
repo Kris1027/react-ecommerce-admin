@@ -3,18 +3,18 @@ import { Eye, EyeOff, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import {
-  notificationsControllerDeleteOneMutation,
+  notificationsControllerAdminDeleteOneMutation,
+  notificationsControllerAdminMarkAsReadMutation,
+  notificationsControllerAdminMarkAsUnreadMutation,
   notificationsControllerFindAllQueryKey,
   notificationsControllerFindUserNotificationsQueryKey,
   notificationsControllerGetUnreadCountQueryKey,
-  notificationsControllerMarkAsReadMutation,
-  notificationsControllerMarkAsUnreadMutation,
 } from '@/api/generated/@tanstack/react-query.gen';
-import type { NotificationDto } from '@/api/generated/types.gen';
+import type { AdminNotificationDto } from '@/api/generated/types.gen';
 import { Button } from '@/components/ui/button';
 
 type NotificationsActionsCellProps = {
-  notification: NotificationDto;
+  notification: AdminNotificationDto;
 };
 
 const NotificationsActionsCell = ({
@@ -35,7 +35,7 @@ const NotificationsActionsCell = ({
   };
 
   const markAsReadMutation = useMutation({
-    ...notificationsControllerMarkAsReadMutation(),
+    ...notificationsControllerAdminMarkAsReadMutation(),
     onSuccess: () => {
       invalidateNotifications();
       toast.success('Notification marked as read');
@@ -43,7 +43,7 @@ const NotificationsActionsCell = ({
   });
 
   const markAsUnreadMutation = useMutation({
-    ...notificationsControllerMarkAsUnreadMutation(),
+    ...notificationsControllerAdminMarkAsUnreadMutation(),
     onSuccess: () => {
       invalidateNotifications();
       toast.success('Notification marked as unread');
@@ -51,7 +51,7 @@ const NotificationsActionsCell = ({
   });
 
   const deleteMutation = useMutation({
-    ...notificationsControllerDeleteOneMutation(),
+    ...notificationsControllerAdminDeleteOneMutation(),
     onSuccess: () => {
       invalidateNotifications();
       toast.success('Notification deleted');

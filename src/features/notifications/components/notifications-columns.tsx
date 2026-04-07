@@ -1,14 +1,14 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 
-import type { NotificationDto } from '@/api/generated/types.gen';
+import type { AdminNotificationDto } from '@/api/generated/types.gen';
 import { DataTableColumnHeader } from '@/components/shared/data-table';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { NOTIFICATION_TYPE_MAP } from '@/components/shared/status-maps';
 import { Badge } from '@/components/ui/badge';
 import { NotificationsActionsCell } from './notifications-actions-cell';
 
-export const columns: ColumnDef<NotificationDto, unknown>[] = [
+export const columns: ColumnDef<AdminNotificationDto, unknown>[] = [
   {
     accessorKey: 'type',
     header: ({ column }) => (

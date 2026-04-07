@@ -10,15 +10,15 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 
 import {
+  notificationsControllerAdminDeleteAllReadMutation,
   notificationsControllerFindAllOptions,
   notificationsControllerFindAllQueryKey,
   notificationsControllerFindUserNotificationsQueryKey,
   notificationsControllerGetUnreadCountQueryKey,
   notificationsControllerMarkAllAsReadMutation,
-  notificationsControllerDeleteAllReadMutation,
 } from '@/api/generated/@tanstack/react-query.gen';
 import { useDocumentTitle } from '@/hooks/use-document-title';
-import type { NotificationDto } from '@/api/generated/types.gen';
+import type { AdminNotificationDto } from '@/api/generated/types.gen';
 import {
   DataTable,
   DataTablePagination,
@@ -78,7 +78,7 @@ function NotificationsPage() {
   });
 
   const deleteAllReadMutation = useMutation({
-    ...notificationsControllerDeleteAllReadMutation(),
+    ...notificationsControllerAdminDeleteAllReadMutation(),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: notificationsControllerGetUnreadCountQueryKey(),
@@ -100,7 +100,7 @@ function NotificationsPage() {
         limit: String(search.limit),
         sortBy: search.sortBy,
         sortOrder: search.sortOrder,
-        type: search.type as NotificationDto['type'] | undefined,
+        type: search.type as AdminNotificationDto['type'] | undefined,
         isRead: search.isRead,
       },
     }),

@@ -129,6 +129,16 @@ const NOTIFICATION_TYPE_MAP: Record<string, StatusConfig> = {
     className: 'border-green-500 text-green-600',
   },
   REFUND_FAILED: { label: 'Refund Failed', variant: 'destructive' },
+  REFUND_REQUEST_CREATED: {
+    label: 'Refund Requested',
+    variant: 'outline',
+    className: 'border-amber-500 text-amber-600',
+  },
+  REVIEW_CREATED: {
+    label: 'Review Created',
+    variant: 'outline',
+    className: 'border-purple-500 text-purple-600',
+  },
   LOW_STOCK: {
     label: 'Low Stock',
     variant: 'outline',
