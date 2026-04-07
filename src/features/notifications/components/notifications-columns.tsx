@@ -65,12 +65,17 @@ export const columns: ColumnDef<AdminNotificationDto, unknown>[] = [
     id: 'referenceId',
     header: 'Reference',
     cell: ({ row }) => {
-      const refId = row.original.referenceId as unknown as string | null;
+      const raw: unknown = row.original.referenceId;
+      const refId = typeof raw === 'string' ? raw : null;
       if (!refId) return <span className='text-muted-foreground'>—</span>;
 
-      const handleCopy = () => {
-        navigator.clipboard.writeText(refId);
-        toast.success('Reference ID copied to clipboard');
+      const handleCopy = async () => {
+        try {
+          await navigator.clipboard.writeText(refId);
+          toast.success('Reference ID copied to clipboard');
+        } catch {
+          toast.error('Failed to copy reference ID');
+        }
       };
 
       return (
@@ -78,6 +83,7 @@ export const columns: ColumnDef<AdminNotificationDto, unknown>[] = [
           type='button'
           className='hover:text-primary cursor-pointer font-mono text-xs transition-colors'
           title='Click to copy'
+          aria-label={`Copy reference ID ${refId}`}
           onClick={handleCopy}
         >
           {refId.slice(0, 8)}...
