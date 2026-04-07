@@ -1,6 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { Link } from '@tanstack/react-router';
 import { format } from 'date-fns';
+import { toast } from 'sonner';
 
 import type { AdminNotificationDto } from '@/api/generated/types.gen';
 import { DataTableColumnHeader } from '@/components/shared/data-table';
@@ -59,6 +60,30 @@ export const columns: ColumnDef<AdminNotificationDto, unknown>[] = [
         {getValue() as string}
       </span>
     ),
+  },
+  {
+    id: 'referenceId',
+    header: 'Reference',
+    cell: ({ row }) => {
+      const refId = row.original.referenceId as unknown as string | null;
+      if (!refId) return <span className='text-muted-foreground'>—</span>;
+
+      const handleCopy = () => {
+        navigator.clipboard.writeText(refId);
+        toast.success('Reference ID copied to clipboard');
+      };
+
+      return (
+        <button
+          type='button'
+          className='hover:text-primary cursor-pointer font-mono text-xs transition-colors'
+          title='Click to copy'
+          onClick={handleCopy}
+        >
+          {refId.slice(0, 8)}...
+        </button>
+      );
+    },
   },
   {
     accessorKey: 'isRead',

@@ -180,7 +180,7 @@ function NotificationsPage() {
       </div>
 
       {isLoading && !data ? (
-        <DataTableSkeleton columnCount={5} rowCount={search.limit} />
+        <DataTableSkeleton columnCount={6} rowCount={search.limit} />
       ) : (
         <DataTable
           columns={columns}
