@@ -7,8 +7,6 @@ import {
   notificationsControllerAdminMarkAsReadMutation,
   notificationsControllerAdminMarkAsUnreadMutation,
   notificationsControllerFindAllQueryKey,
-  notificationsControllerFindUserNotificationsQueryKey,
-  notificationsControllerGetUnreadCountQueryKey,
 } from '@/api/generated/@tanstack/react-query.gen';
 import type { AdminNotificationDto } from '@/api/generated/types.gen';
 import { Button } from '@/components/ui/button';
@@ -23,12 +21,6 @@ const NotificationsActionsCell = ({
   const queryClient = useQueryClient();
 
   const invalidateNotifications = () => {
-    queryClient.invalidateQueries({
-      queryKey: notificationsControllerGetUnreadCountQueryKey(),
-    });
-    queryClient.invalidateQueries({
-      queryKey: notificationsControllerFindUserNotificationsQueryKey(),
-    });
     queryClient.invalidateQueries({
       queryKey: notificationsControllerFindAllQueryKey(),
     });
