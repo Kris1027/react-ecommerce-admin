@@ -11,11 +11,11 @@ import { z } from 'zod';
 
 import {
   notificationsControllerAdminDeleteAllReadMutation,
+  notificationsControllerAdminMarkAllAsReadMutation,
   notificationsControllerFindAllOptions,
   notificationsControllerFindAllQueryKey,
   notificationsControllerFindUserNotificationsQueryKey,
   notificationsControllerGetUnreadCountQueryKey,
-  notificationsControllerMarkAllAsReadMutation,
 } from '@/api/generated/@tanstack/react-query.gen';
 import { useDocumentTitle } from '@/hooks/use-document-title';
 import type { AdminNotificationDto } from '@/api/generated/types.gen';
@@ -62,7 +62,7 @@ function NotificationsPage() {
   const queryClient = useQueryClient();
 
   const markAllAsReadMutation = useMutation({
-    ...notificationsControllerMarkAllAsReadMutation(),
+    ...notificationsControllerAdminMarkAllAsReadMutation(),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: notificationsControllerGetUnreadCountQueryKey(),

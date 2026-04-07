@@ -4287,29 +4287,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Notification deleted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "data": {
-                      "$ref": "#/components/schemas/NotificationDto"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "example": "2025-01-15T12:00:00.000Z"
-                    }
-                  },
-                  "required": ["success", "data", "timestamp"]
-                }
-              }
-            }
+          "204": {
+            "description": "Notification deleted"
           },
           "401": {
             "description": "Unauthorized — Missing or invalid JWT",
@@ -4644,6 +4623,75 @@
         "tags": ["Notifications"]
       }
     },
+    "/api/v1/notifications/admin/read-all": {
+      "patch": {
+        "operationId": "NotificationsController_adminMarkAllAsRead",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Number of notifications marked as read",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/CountResponseDto"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "example": "2025-01-15T12:00:00.000Z"
+                    }
+                  },
+                  "required": ["success", "data", "timestamp"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — Missing or invalid JWT",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — Insufficient role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests — Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseSchema"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Mark all notifications as read across all users (admin)",
+        "tags": ["Notifications"]
+      }
+    },
     "/api/v1/notifications/admin/{id}/read": {
       "patch": {
         "operationId": "NotificationsController_adminMarkAsRead",
@@ -4906,29 +4954,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Notification deleted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "data": {
-                      "$ref": "#/components/schemas/AdminNotificationDto"
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "example": "2025-01-15T12:00:00.000Z"
-                    }
-                  },
-                  "required": ["success", "data", "timestamp"]
-                }
-              }
-            }
+          "204": {
+            "description": "Notification deleted"
           },
           "401": {
             "description": "Unauthorized — Missing or invalid JWT",
