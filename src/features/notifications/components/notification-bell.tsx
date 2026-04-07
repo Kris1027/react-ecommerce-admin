@@ -6,14 +6,12 @@ import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 
 import {
-  notificationsControllerFindUserNotificationsOptions,
-  notificationsControllerFindUserNotificationsQueryKey,
-  notificationsControllerGetUnreadCountOptions,
-  notificationsControllerGetUnreadCountQueryKey,
-  notificationsControllerMarkAsReadMutation,
-  notificationsControllerMarkAllAsReadMutation,
+  notificationsControllerFindAllOptions,
+  notificationsControllerFindAllQueryKey,
+  notificationsControllerAdminMarkAsReadMutation,
+  notificationsControllerAdminMarkAllAsReadMutation,
 } from '@/api/generated/@tanstack/react-query.gen';
-import type { NotificationDto } from '@/api/generated/types.gen';
+import type { AdminNotificationDto } from '@/api/generated/types.gen';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -27,45 +25,44 @@ export const NotificationBell = () => {
   const [open, setOpen] = useState(false);
 
   const { data: unreadData } = useQuery({
-    ...notificationsControllerGetUnreadCountOptions(),
+    ...notificationsControllerFindAllOptions({
+      query: { limit: '1', isRead: 'false' },
+    }),
     refetchInterval: 30_000,
   });
 
   const { data: notificationsData } = useQuery({
-    ...notificationsControllerFindUserNotificationsOptions({
+    ...notificationsControllerFindAllOptions({
       query: { limit: '5' },
     }),
     enabled: open,
   });
 
-  const unreadCount = unreadData?.data?.count ?? 0;
+  const unreadCount = unreadData?.meta?.total ?? 0;
   const notifications = notificationsData?.data ?? [];
 
   const invalidateNotifications = () => {
     queryClient.invalidateQueries({
-      queryKey: notificationsControllerGetUnreadCountQueryKey(),
-    });
-    queryClient.invalidateQueries({
-      queryKey: notificationsControllerFindUserNotificationsQueryKey(),
+      queryKey: notificationsControllerFindAllQueryKey(),
     });
   };
 
   const markAsReadMutation = useMutation({
-    ...notificationsControllerMarkAsReadMutation(),
+    ...notificationsControllerAdminMarkAsReadMutation(),
     onSuccess: () => {
       invalidateNotifications();
     },
   });
 
   const markAllAsReadMutation = useMutation({
-    ...notificationsControllerMarkAllAsReadMutation(),
+    ...notificationsControllerAdminMarkAllAsReadMutation(),
     onSuccess: () => {
       invalidateNotifications();
       toast.success('All notifications marked as read');
     },
   });
 
-  const handleNotificationClick = (notification: NotificationDto) => {
+  const handleNotificationClick = (notification: AdminNotificationDto) => {
     if (!notification.isRead) {
       markAsReadMutation.mutate({ path: { id: notification.id } });
     }
