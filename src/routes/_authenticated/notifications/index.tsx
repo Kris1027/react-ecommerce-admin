@@ -14,8 +14,6 @@ import {
   notificationsControllerAdminMarkAllAsReadMutation,
   notificationsControllerFindAllOptions,
   notificationsControllerFindAllQueryKey,
-  notificationsControllerFindUserNotificationsQueryKey,
-  notificationsControllerGetUnreadCountQueryKey,
 } from '@/api/generated/@tanstack/react-query.gen';
 import { useDocumentTitle } from '@/hooks/use-document-title';
 import {
@@ -65,12 +63,6 @@ function NotificationsPage() {
     ...notificationsControllerAdminMarkAllAsReadMutation(),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: notificationsControllerGetUnreadCountQueryKey(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: notificationsControllerFindUserNotificationsQueryKey(),
-      });
-      queryClient.invalidateQueries({
         queryKey: notificationsControllerFindAllQueryKey(),
       });
       toast.success('All notifications marked as read');
@@ -80,12 +72,6 @@ function NotificationsPage() {
   const deleteAllReadMutation = useMutation({
     ...notificationsControllerAdminDeleteAllReadMutation(),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: notificationsControllerGetUnreadCountQueryKey(),
-      });
-      queryClient.invalidateQueries({
-        queryKey: notificationsControllerFindUserNotificationsQueryKey(),
-      });
       queryClient.invalidateQueries({
         queryKey: notificationsControllerFindAllQueryKey(),
       });
