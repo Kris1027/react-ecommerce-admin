@@ -1,7 +1,7 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { Plus } from 'lucide-react';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import {
   categoriesControllerFindAllAdminOptions,
@@ -26,12 +26,12 @@ import { columns } from '@/features/products/components/products-columns';
 import { ADMIN_IS_ACTIVE_FILTER, ADMIN_DROPDOWN_LIMIT } from '@/lib/constants';
 
 const productsSearchSchema = z.object({
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().default(10),
-  sortBy: z.string().optional(),
-  sortOrder: z.enum(['asc', 'desc']).optional(),
-  categoryId: z.string().optional(),
-  search: z.string().optional(),
+  page: z.coerce.number().int().positive().default(1).catch(1),
+  limit: z.coerce.number().int().positive().default(10).catch(10),
+  sortBy: z.string().optional().catch(undefined),
+  sortOrder: z.enum(['asc', 'desc']).optional().catch(undefined),
+  categoryId: z.string().optional().catch(undefined),
+  search: z.string().optional().catch(undefined),
 });
 
 export const Route = createFileRoute('/_authenticated/products/')({

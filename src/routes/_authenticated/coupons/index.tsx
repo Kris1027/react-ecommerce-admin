@@ -1,7 +1,7 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { Plus } from 'lucide-react';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import { couponsControllerFindAllOptions } from '@/api/generated/@tanstack/react-query.gen';
 import { useDocumentTitle } from '@/hooks/use-document-title';
@@ -24,13 +24,13 @@ import { columns } from '@/features/coupons/components/coupons-columns';
 const COUPON_TYPES = ['PERCENTAGE', 'FIXED_AMOUNT'] as const;
 
 const couponsSearchSchema = z.object({
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().default(10),
-  sortBy: z.string().optional(),
-  sortOrder: z.enum(['asc', 'desc']).optional(),
-  isActive: z.enum(['true', 'false']).optional(),
-  type: z.enum(COUPON_TYPES).optional(),
-  validNow: z.enum(['true', 'false']).optional(),
+  page: z.coerce.number().int().positive().default(1).catch(1),
+  limit: z.coerce.number().int().positive().default(10).catch(10),
+  sortBy: z.string().optional().catch(undefined),
+  sortOrder: z.enum(['asc', 'desc']).optional().catch(undefined),
+  isActive: z.enum(['true', 'false']).optional().catch(undefined),
+  type: z.enum(COUPON_TYPES).optional().catch(undefined),
+  validNow: z.enum(['true', 'false']).optional().catch(undefined),
 });
 
 export const Route = createFileRoute('/_authenticated/coupons/')({

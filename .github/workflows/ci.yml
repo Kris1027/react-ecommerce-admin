@@ -39,7 +39,7 @@ jobs:
           node-version-file: '.node-version'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
-      - run: pnpm dlx @tanstack/router-cli@1.166.7 generate
+      - run: pnpm exec tsr generate
       - run: pnpm api:generate
       - run: pnpm build
 
@@ -67,7 +67,7 @@ jobs:
           node-version-file: '.node-version'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
-      - run: pnpm dlx @tanstack/router-cli@1.166.7 generate
+      - run: pnpm exec tsr generate
       - run: pnpm api:generate
       - run: pnpm test
 
@@ -82,7 +82,7 @@ jobs:
           node-version-file: '.node-version'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
-      - run: pnpm dlx @tanstack/router-cli@1.166.7 generate
+      - run: pnpm exec tsr generate
       - run: pnpm api:generate
       - run: pnpm build
       - run: pnpm size
