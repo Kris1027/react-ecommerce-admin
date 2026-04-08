@@ -15,17 +15,16 @@ test.describe('Search and Filter', () => {
     ).toBeVisible();
   });
 
-  test('should filter products by search input', async ({
+  test('should filter products by search param in URL', async ({
     authenticatedPage,
   }) => {
-    const searchInput =
-      authenticatedPage.getByPlaceholder('Search products...');
+    // Products page uses URL search params for filtering (no search input on page)
+    await authenticatedPage.goto('/products?search=Wireless');
 
-    await searchInput.fill('Wireless');
-    await searchInput.press('Enter');
-
-    // URL should contain the search query param
     await expect(authenticatedPage).toHaveURL(/search=Wireless/);
+    await expect(
+      authenticatedPage.getByText('Wireless Headphones'),
+    ).toBeVisible();
   });
 
   test('should filter products by category', async ({ authenticatedPage }) => {

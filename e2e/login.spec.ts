@@ -40,7 +40,9 @@ test.describe('Login Flow', () => {
     await page.getByRole('button', { name: 'Sign in' }).click();
 
     await expect(page).toHaveURL('/');
-    await expect(page.getByText('Dashboard')).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Dashboard' }),
+    ).toBeVisible();
   });
 
   test('should show loading state during login', async ({ page }) => {
