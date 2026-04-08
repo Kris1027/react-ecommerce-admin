@@ -33,7 +33,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { generateSlug, slugSchema, priceSchema } from '@/lib/utils';
 import { ADMIN_IS_ACTIVE_FILTER, ADMIN_DROPDOWN_LIMIT } from '@/lib/constants';
 import { toast } from 'sonner';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const priceOptionalSchema = z
   .string()

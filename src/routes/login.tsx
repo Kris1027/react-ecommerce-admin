@@ -2,7 +2,7 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 import { LoginForm } from '@/features/auth/components/login-form';
 import { useDocumentTitle } from '@/hooks/use-document-title';
 import { getIsAuthenticated } from '@/stores/auth.store';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const loginSearchSchema = z.object({
   redirect: z.string().optional().catch(undefined),

@@ -31,7 +31,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { generateSlug, slugSchema } from '@/lib/utils';
 import { ADMIN_IS_ACTIVE_FILTER, ADMIN_DROPDOWN_LIMIT } from '@/lib/constants';
 import { toast } from 'sonner';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const categoryFormSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),

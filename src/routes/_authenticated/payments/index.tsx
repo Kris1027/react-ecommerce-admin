@@ -7,7 +7,7 @@ import {
 } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import { useDocumentTitle } from '@/hooks/use-document-title';
 import {

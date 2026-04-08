@@ -1,7 +1,7 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { Plus } from 'lucide-react';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import { categoriesControllerFindAllAdminOptions } from '@/api/generated/@tanstack/react-query.gen';
 import { useDocumentTitle } from '@/hooks/use-document-title';

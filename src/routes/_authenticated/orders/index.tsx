@@ -1,6 +1,6 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import { ordersControllerGetAllOrdersOptions } from '@/api/generated/@tanstack/react-query.gen';
 import { useDocumentTitle } from '@/hooks/use-document-title';

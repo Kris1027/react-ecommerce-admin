@@ -1,5 +1,5 @@
 import { useForm, useWatch } from 'react-hook-form';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
