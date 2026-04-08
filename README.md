@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/Kris1027/react-ecommerce-admin/actions/workflows/ci.yml/badge.svg)](https://github.com/Kris1027/react-ecommerce-admin/actions/workflows/ci.yml)
 
-A production-ready **admin dashboard** for the [NestJS Ecommerce API](https://github.com/Kris1027/nestjs-ecommerce-api), built with React 19, TypeScript 5.9, TanStack Router, TanStack Query, and shadcn/ui. Features auto-generated API client from OpenAPI spec, secure JWT authentication with token rotation, real-time notifications, 80+ unit tests, and 45 E2E tests.
+A production-ready **admin dashboard** for the [NestJS Ecommerce API](https://github.com/Kris1027/nestjs-ecommerce-api), built with React 19, TypeScript 6.0, TanStack Router, TanStack Query, and shadcn/ui. Features auto-generated API client from OpenAPI spec, secure JWT authentication with token rotation, real-time notifications, 80+ unit tests, and 45 E2E tests.
 
 ---
 
@@ -10,10 +10,10 @@ A production-ready **admin dashboard** for the [NestJS Ecommerce API](https://gi
 
 | Category            | Technology                                        |
 | ------------------- | ------------------------------------------------- |
-| **Build**           | Vite 7                                            |
+| **Build**           | Vite 8                                            |
 | **Compiler**        | React Compiler (via babel-plugin-react-compiler)  |
 | **Framework**       | React 19                                          |
-| **Language**        | TypeScript 5.9 (strict mode)                      |
+| **Language**        | TypeScript 6.0 (strict mode)                      |
 | **Routing**         | TanStack Router (file-based, auto code splitting) |
 | **Server State**    | TanStack Query 5                                  |
 | **Client State**    | Zustand 5                                         |
