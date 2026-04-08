@@ -16,10 +16,10 @@ import { columns } from '@/features/categories/components/categories-columns';
 import { ADMIN_IS_ACTIVE_FILTER } from '@/lib/constants';
 
 const categoriesSearchSchema = z.object({
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().default(10),
-  sortBy: z.string().optional(),
-  sortOrder: z.enum(['asc', 'desc']).optional(),
+  page: z.coerce.number().int().positive().default(1).catch(1),
+  limit: z.coerce.number().int().positive().default(10).catch(10),
+  sortBy: z.string().optional().catch(undefined),
+  sortOrder: z.enum(['asc', 'desc']).optional().catch(undefined),
 });
 
 export const Route = createFileRoute('/_authenticated/categories/')({

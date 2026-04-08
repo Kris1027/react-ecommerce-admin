@@ -30,11 +30,11 @@ const ORDER_STATUSES = [
 ] as const;
 
 const ordersSearchSchema = z.object({
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().default(10),
-  sortBy: z.string().optional(),
-  sortOrder: z.enum(['asc', 'desc']).optional(),
-  status: z.enum(ORDER_STATUSES).optional(),
+  page: z.coerce.number().int().positive().default(1).catch(1),
+  limit: z.coerce.number().int().positive().default(10).catch(10),
+  sortBy: z.string().optional().catch(undefined),
+  sortOrder: z.enum(['asc', 'desc']).optional().catch(undefined),
+  status: z.enum(ORDER_STATUSES).optional().catch(undefined),
 });
 
 export const Route = createFileRoute('/_authenticated/orders/')({

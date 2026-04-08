@@ -43,11 +43,11 @@ const PAYMENT_STATUSES = [
 ] as const;
 
 const paymentsSearchSchema = z.object({
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().default(10),
-  sortBy: z.string().optional(),
-  sortOrder: z.enum(['asc', 'desc']).optional(),
-  status: z.enum(PAYMENT_STATUSES).optional(),
+  page: z.coerce.number().int().positive().default(1).catch(1),
+  limit: z.coerce.number().int().positive().default(10).catch(10),
+  sortBy: z.string().optional().catch(undefined),
+  sortOrder: z.enum(['asc', 'desc']).optional().catch(undefined),
+  status: z.enum(PAYMENT_STATUSES).optional().catch(undefined),
 });
 
 export const Route = createFileRoute('/_authenticated/payments/')({

@@ -24,12 +24,12 @@ const REVIEW_STATUSES = ['PENDING', 'APPROVED', 'REJECTED'] as const;
 const RATINGS = [1, 2, 3, 4, 5] as const;
 
 const reviewsSearchSchema = z.object({
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().default(10),
-  sortBy: z.string().optional(),
-  sortOrder: z.enum(['asc', 'desc']).optional(),
-  status: z.enum(REVIEW_STATUSES).optional(),
-  rating: z.coerce.number().int().min(1).max(5).optional(),
+  page: z.coerce.number().int().positive().default(1).catch(1),
+  limit: z.coerce.number().int().positive().default(10).catch(10),
+  sortBy: z.string().optional().catch(undefined),
+  sortOrder: z.enum(['asc', 'desc']).optional().catch(undefined),
+  status: z.enum(REVIEW_STATUSES).optional().catch(undefined),
+  rating: z.coerce.number().int().min(1).max(5).optional().catch(undefined),
 });
 
 export const Route = createFileRoute('/_authenticated/reviews/')({

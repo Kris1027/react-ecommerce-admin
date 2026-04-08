@@ -40,12 +40,12 @@ import { columns } from '@/features/notifications/components/notifications-colum
 const READ_STATUSES = ['true', 'false'] as const;
 
 const notificationsSearchSchema = z.object({
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().default(10),
-  sortBy: z.string().optional(),
-  sortOrder: z.enum(['asc', 'desc']).optional(),
-  type: z.enum(NOTIFICATION_TYPES_TUPLE).optional(),
-  isRead: z.enum(READ_STATUSES).optional(),
+  page: z.coerce.number().int().positive().default(1).catch(1),
+  limit: z.coerce.number().int().positive().default(10).catch(10),
+  sortBy: z.string().optional().catch(undefined),
+  sortOrder: z.enum(['asc', 'desc']).optional().catch(undefined),
+  type: z.enum(NOTIFICATION_TYPES_TUPLE).optional().catch(undefined),
+  isRead: z.enum(READ_STATUSES).optional().catch(undefined),
 });
 
 export const Route = createFileRoute('/_authenticated/notifications/')({
