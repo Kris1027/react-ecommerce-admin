@@ -3,8 +3,6 @@ import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { Trash2 } from 'lucide-react';
-
 import {
   categoriesControllerFindAllAdminOptions,
   productsControllerCreateMutation,
@@ -14,10 +12,12 @@ import {
   productsControllerUpdateMutation,
   productsControllerUploadImageMutation,
   productsControllerRemoveImageMutation,
+  productsControllerReorderImagesMutation,
 } from '@/api/generated/@tanstack/react-query.gen';
 import type { ProductDetailDto } from '@/api/generated/types.gen';
 import { FormField } from '@/components/shared/form-field';
 import { ImageUpload } from '@/components/shared/image-upload';
+import { SortableImageGrid } from './sortable-image-grid';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -149,6 +149,29 @@ export const ProductForm = ({ product }: ProductFormProps) => {
       toast.success('Image removed');
     },
   });
+
+  const reorderImagesMutation = useMutation({
+    ...productsControllerReorderImagesMutation(),
+    onSuccess: () => {
+      invalidateProducts();
+      if (product) {
+        queryClient.invalidateQueries({
+          queryKey: productsControllerFindBySlugQueryKey({
+            path: { slug: product.slug },
+          }),
+        });
+      }
+      toast.success('Image order updated');
+    },
+  });
+
+  const handleReorder = (imageIds: string[]) => {
+    if (!product) return;
+    reorderImagesMutation.mutate({
+      path: { id: product.id },
+      body: { imageIds },
+    });
+  };
 
   const isPending =
     createMutation.isPending ||
@@ -365,48 +388,39 @@ export const ProductForm = ({ product }: ProductFormProps) => {
             </FormField>
           </div>
 
-          {product && product.images.length > 0 && (
-            <FormField label='Current Images' name='currentImages'>
-              <div className='flex flex-wrap gap-4'>
-                {product.images.map((image) => (
-                  <div key={image.id} className='relative'>
-                    <img
-                      src={image.url}
-                      alt={
-                        typeof image.alt === 'string' ? image.alt : product.name
-                      }
-                      className='h-20 w-20 rounded-md border object-cover sm:h-24 sm:w-24'
-                    />
-                    <Button
-                      type='button'
-                      variant='destructive'
-                      size='icon'
-                      className='absolute -top-2 -right-2 size-6'
-                      disabled={removeImageMutation.isPending}
-                      onClick={() =>
-                        removeImageMutation.mutate({
-                          path: { id: product.id, imageId: image.id },
-                        })
-                      }
-                    >
-                      <Trash2 className='size-3' />
-                    </Button>
-                  </div>
-                ))}
-              </div>
+          {isEditing && product ? (
+            <FormField label='Images' name='images'>
+              <SortableImageGrid
+                existingImages={product.images}
+                newFiles={newImageFiles}
+                onReorder={handleReorder}
+                onNewFilesReorder={setNewImageFiles}
+                onRemoveExisting={(imageId) =>
+                  removeImageMutation.mutate({
+                    path: { id: product.id, imageId },
+                  })
+                }
+                onRemoveNew={(index) =>
+                  setNewImageFiles((prev) => prev.filter((_, i) => i !== index))
+                }
+                onAddFiles={(files) =>
+                  setNewImageFiles((prev) => [...prev, ...files])
+                }
+                disabled={isPending}
+              />
+            </FormField>
+          ) : (
+            <FormField label='Add Images' name='newImage'>
+              <ImageUpload
+                value={newImageFiles}
+                onChange={(files) =>
+                  setNewImageFiles(
+                    files.filter((f): f is File => f instanceof File),
+                  )
+                }
+              />
             </FormField>
           )}
-
-          <FormField label='Add Images' name='newImage'>
-            <ImageUpload
-              value={newImageFiles}
-              onChange={(files) =>
-                setNewImageFiles(
-                  files.filter((f): f is File => f instanceof File),
-                )
-              }
-            />
-          </FormField>
 
           <Button
             type='submit'

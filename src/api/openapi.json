@@ -7138,6 +7138,84 @@
         "tags": ["Products"]
       }
     },
+    "/api/v1/products/{id}/images/reorder": {
+      "patch": {
+        "operationId": "ProductsController_reorderImages",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Product CUID",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ReorderImagesDto" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Images reordered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "data": { "$ref": "#/components/schemas/ProductDetailDto" },
+                    "timestamp": {
+                      "type": "string",
+                      "example": "2025-01-15T12:00:00.000Z"
+                    }
+                  },
+                  "required": ["success", "data", "timestamp"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponseSchema" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — Missing or invalid JWT",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponseSchema" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — Insufficient role",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponseSchema" }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponseSchema" }
+              }
+            }
+          }
+        },
+        "security": [{ "access-token": [] }],
+        "summary": "Reorder product images (admin)",
+        "tags": ["Products"]
+      }
+    },
     "/api/v1/products/{id}/images/{imageId}": {
       "delete": {
         "operationId": "ProductsController_removeImage",
@@ -10520,6 +10598,21 @@
           "isActive": { "type": "boolean" },
           "isFeatured": { "type": "boolean" }
         }
+      },
+      "ReorderImagesDto": {
+        "type": "object",
+        "properties": {
+          "imageIds": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "cuid",
+              "pattern": "^[cC][^\\s-]{8,}$"
+            }
+          }
+        },
+        "required": ["imageIds"]
       },
       "CartItemProductDto": {
         "type": "object",
