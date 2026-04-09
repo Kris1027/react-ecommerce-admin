@@ -14,7 +14,10 @@ import {
   productsControllerRemoveImageMutation,
   productsControllerReorderImagesMutation,
 } from '@/api/generated/@tanstack/react-query.gen';
-import type { ProductDetailDto } from '@/api/generated/types.gen';
+import type {
+  ProductDetailDto,
+  ProductImageDto,
+} from '@/api/generated/types.gen';
 import { FormField } from '@/components/shared/form-field';
 import { ImageUpload } from '@/components/shared/image-upload';
 import { SortableImageGrid } from './sortable-image-grid';
@@ -110,6 +113,9 @@ export const ProductForm = ({ product }: ProductFormProps) => {
   }, [nameValue, slugManuallyEdited, setValue]);
 
   const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
+  const [pendingImageOrder, setPendingImageOrder] = useState<string[] | null>(
+    null,
+  );
 
   const invalidateProducts = () => {
     queryClient.invalidateQueries({
@@ -166,17 +172,14 @@ export const ProductForm = ({ product }: ProductFormProps) => {
   });
 
   const handleReorder = (imageIds: string[]) => {
-    if (!product) return;
-    reorderImagesMutation.mutate({
-      path: { id: product.id },
-      body: { imageIds },
-    });
+    setPendingImageOrder(imageIds);
   };
 
   const isPending =
     createMutation.isPending ||
     updateMutation.isPending ||
-    uploadImageMutation.isPending;
+    uploadImageMutation.isPending ||
+    reorderImagesMutation.isPending;
 
   const onSubmit = async (values: ProductFormValues) => {
     const slugChanged = values.slug !== (product?.slug ?? '');
@@ -193,6 +196,13 @@ export const ProductForm = ({ product }: ProductFormProps) => {
           sku: values.sku || null,
         },
       });
+
+      if (pendingImageOrder) {
+        await reorderImagesMutation.mutateAsync({
+          path: { id: product.id },
+          body: { imageIds: pendingImageOrder },
+        });
+      }
 
       for (const file of newImageFiles) {
         await uploadImageMutation.mutateAsync({
@@ -217,6 +227,7 @@ export const ProductForm = ({ product }: ProductFormProps) => {
         isFeatured: updated.isFeatured,
       });
       setNewImageFiles([]);
+      setPendingImageOrder(null);
       setSlugManuallyEdited(false);
 
       if (updated.slug !== product.slug) {
@@ -391,7 +402,15 @@ export const ProductForm = ({ product }: ProductFormProps) => {
           {isEditing && product ? (
             <FormField label='Images' name='images'>
               <SortableImageGrid
-                existingImages={product.images}
+                existingImages={
+                  pendingImageOrder
+                    ? pendingImageOrder.reduce<ProductImageDto[]>((acc, id) => {
+                        const img = product.images.find((img) => img.id === id);
+                        if (img) acc.push(img);
+                        return acc;
+                      }, [])
+                    : product.images
+                }
                 newFiles={newImageFiles}
                 onReorder={handleReorder}
                 onNewFilesReorder={setNewImageFiles}
@@ -424,7 +443,12 @@ export const ProductForm = ({ product }: ProductFormProps) => {
 
           <Button
             type='submit'
-            disabled={(!isDirty && newImageFiles.length === 0) || isPending}
+            disabled={
+              (!isDirty &&
+                newImageFiles.length === 0 &&
+                pendingImageOrder === null) ||
+              isPending
+            }
           >
             {isPending
               ? 'Saving...'
