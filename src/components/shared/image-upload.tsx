@@ -5,75 +5,116 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 type ImageUploadProps = {
-  value: File | string | null;
-  onChange: (file: File | null) => void;
-  onRemove?: () => void;
+  value: Array<File | string>;
+  onChange: (files: Array<File | string>) => void;
+  maxFiles?: number;
   accept?: string;
   maxSizeMB?: number;
   disabled?: boolean;
+  allowRemoveUrl?: boolean;
 };
 
 const DEFAULT_ACCEPT = 'image/jpeg,image/png,image/webp';
 const DEFAULT_MAX_SIZE_MB = 5;
 
+// Module-level cache: File → object URL. WeakMap allows GC when File is dereferenced.
+const previewCache = new WeakMap<File, string>();
+
+const getOrCreatePreview = (file: File): string => {
+  let url = previewCache.get(file);
+  if (!url) {
+    url = URL.createObjectURL(file);
+    previewCache.set(file, url);
+  }
+  return url;
+};
+
+const revokePreview = (file: File) => {
+  const url = previewCache.get(file);
+  if (url) {
+    URL.revokeObjectURL(url);
+    previewCache.delete(file);
+  }
+};
+
 const ImageUpload = ({
   value,
   onChange,
-  onRemove,
+  maxFiles,
   accept = DEFAULT_ACCEPT,
   maxSizeMB = DEFAULT_MAX_SIZE_MB,
   disabled = false,
+  allowRemoveUrl = true,
 }: ImageUploadProps) => {
   const [error, setError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [filePreview, setFilePreview] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Track current value for unmount cleanup (ref written only in effects)
+  const valueRef = useRef(value);
   useEffect(() => {
-    if (!(value instanceof File)) {
-      return;
-    }
-
-    let cancelled = false;
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      if (!cancelled) {
-        setFilePreview(e.target?.result as string);
-      }
-    };
-
-    reader.readAsDataURL(value);
-
-    return () => {
-      cancelled = true;
-      reader.abort();
-    };
+    valueRef.current = value;
   }, [value]);
 
-  const preview =
-    value instanceof File
-      ? filePreview
-      : typeof value === 'string'
-        ? value
-        : null;
+  useEffect(() => {
+    return () => {
+      for (const item of valueRef.current) {
+        if (item instanceof File) {
+          revokePreview(item);
+        }
+      }
+    };
+  }, []);
 
-  const validateAndSet = (file: File) => {
-    setError(null);
+  const getPreviewSrc = (item: File | string): string => {
+    if (typeof item === 'string') return item;
+    return getOrCreatePreview(item);
+  };
 
+  const canAddMore = !maxFiles || value.length < maxFiles;
+
+  const validateFile = (file: File): boolean => {
     const allowedTypes = accept.split(',').map((t) => t.trim());
     if (!allowedTypes.includes(file.type)) {
       setError(`File type must be one of: ${allowedTypes.join(', ')}`);
-      return;
+      return false;
     }
 
     const maxBytes = maxSizeMB * 1024 * 1024;
     if (file.size > maxBytes) {
       setError(`File size must be less than ${maxSizeMB}MB`);
-      return;
+      return false;
     }
 
-    onChange(file);
+    return true;
+  };
+
+  const addFiles = (files: FileList) => {
+    setError(null);
+    const remaining = maxFiles ? maxFiles - value.length : files.length;
+    const toAdd: File[] = [];
+
+    for (let i = 0; i < Math.min(files.length, remaining); i++) {
+      const file = files[i];
+      if (validateFile(file)) {
+        toAdd.push(file);
+      } else {
+        return;
+      }
+    }
+
+    if (toAdd.length > 0) {
+      onChange([...value, ...toAdd]);
+    }
+  };
+
+  const handleRemove = (index: number) => {
+    setError(null);
+    const item = value[index];
+    if (item instanceof File) {
+      revokePreview(item);
+    }
+    onChange(value.filter((_, i) => i !== index));
   };
 
   const handleClick = () => {
@@ -82,9 +123,8 @@ const ImageUpload = ({
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      validateAndSet(file);
+    if (e.target.files && e.target.files.length > 0) {
+      addFiles(e.target.files);
     }
     e.target.value = '';
   };
@@ -103,69 +143,79 @@ const ImageUpload = ({
     setIsDragging(false);
     if (disabled) return;
 
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      validateAndSet(file);
+    if (e.dataTransfer.files.length > 0) {
+      addFiles(e.dataTransfer.files);
     }
   };
 
-  const handleRemove = () => {
-    onChange(null);
-    setError(null);
-    onRemove?.();
+  const canRemoveItem = (item: File | string): boolean => {
+    if (typeof item === 'string') return allowRemoveUrl;
+    return true;
   };
 
   return (
     <div className='flex flex-col gap-2'>
-      {preview ? (
-        <div className='relative w-fit'>
-          <img
-            src={preview}
-            alt='Upload preview'
-            className='h-32 w-32 rounded-md border object-cover sm:h-40 sm:w-40'
-          />
-          {!disabled && (
-            <Button
-              type='button'
-              variant='destructive'
-              size='icon'
-              className='absolute -top-2 -right-2 size-6'
-              onClick={handleRemove}
+      <div className='flex flex-wrap gap-4'>
+        {value.map((item, index) => {
+          const src = getPreviewSrc(item);
+          return (
+            <div
+              key={`${typeof item === 'string' ? item : item.name}-${index}`}
+              className='relative'
             >
-              <X className='size-4' />
-            </Button>
-          )}
-        </div>
-      ) : (
-        <div
-          role='button'
-          tabIndex={0}
-          onClick={handleClick}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') handleClick();
-          }}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          className={cn(
-            'flex h-32 w-32 flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed transition-colors sm:h-40 sm:w-40',
-            isDragging
-              ? 'border-primary bg-primary/5'
-              : 'border-muted-foreground/25 hover:border-primary/50',
-            disabled && 'pointer-events-none opacity-50',
-          )}
-        >
-          <Upload className='text-muted-foreground size-8' />
-          <p className='text-muted-foreground text-xs'>
-            Click or drag to upload
-          </p>
-        </div>
-      )}
+              <img
+                src={src}
+                alt='Upload preview'
+                className='h-32 w-32 rounded-md border object-cover sm:h-40 sm:w-40'
+              />
+              {!disabled && canRemoveItem(item) && (
+                <Button
+                  type='button'
+                  variant='destructive'
+                  size='icon'
+                  className='absolute -top-2 -right-2 size-6'
+                  aria-label={`Remove image ${index + 1}`}
+                  onClick={() => handleRemove(index)}
+                >
+                  <X className='size-4' />
+                </Button>
+              )}
+            </div>
+          );
+        })}
+
+        {canAddMore && (
+          <div
+            role='button'
+            tabIndex={0}
+            onClick={handleClick}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') handleClick();
+            }}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={cn(
+              'flex h-32 w-32 flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed transition-colors sm:h-40 sm:w-40',
+              isDragging
+                ? 'border-primary bg-primary/5'
+                : 'border-muted-foreground/25 hover:border-primary/50',
+              disabled && 'pointer-events-none opacity-50',
+            )}
+          >
+            <Upload className='text-muted-foreground size-8' />
+            <p className='text-muted-foreground text-xs'>
+              Click or drag to upload
+            </p>
+          </div>
+        )}
+      </div>
 
       <input
         ref={inputRef}
         type='file'
         accept={accept}
+        multiple={!maxFiles || maxFiles > 1}
         onChange={handleFileChange}
         className='hidden'
       />
