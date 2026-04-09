@@ -21,6 +21,7 @@ A production-ready **admin dashboard** for the [NestJS Ecommerce API](https://gi
 | **UI Components**   | shadcn/ui + Radix UI                              |
 | **Styling**         | Tailwind CSS 4                                    |
 | **Forms**           | React Hook Form 7 + Zod 4                         |
+| **Drag & Drop**     | @dnd-kit/react                                    |
 | **Charts**          | Recharts 3                                        |
 | **Toasts**          | Sonner                                            |
 | **API Client**      | @hey-api/openapi-ts (auto-generated from Swagger) |
@@ -47,6 +48,7 @@ A production-ready **admin dashboard** for the [NestJS Ecommerce API](https://gi
 - Category and search filters
 - Slug auto-generation from product name
 - Multi-image upload with drag-and-drop (Cloudinary via backend)
+- Drag-to-reorder images with "Main" badge (first image = primary)
 - Featured and active toggles
 
 ### Category Management
@@ -122,6 +124,7 @@ A production-ready **admin dashboard** for the [NestJS Ecommerce API](https://gi
 - Loading skeletons, empty states, confirmation dialogs
 - Global error boundary + route-level error components
 - Offline detection banner
+- Cancel buttons on all create/edit forms
 - Toast notifications on all mutations
 
 ---

@@ -1,14 +1,18 @@
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { z } from 'zod/v4';
 
 import {
   inventoryControllerAdjustStockMutation,
-  inventoryControllerGetStockQueryKey,
-  inventoryControllerGetMovementHistoryQueryKey,
   inventoryControllerGetLowStockProductsQueryKey,
+  inventoryControllerGetMovementHistoryQueryKey,
+  inventoryControllerGetProductsQueryKey,
+  inventoryControllerGetStockQueryKey,
+  productsControllerFindAllAdminQueryKey,
+  productsControllerFindAllQueryKey,
 } from '@/api/generated/@tanstack/react-query.gen';
 import { FormField } from '@/components/shared/form-field';
 import { Button } from '@/components/ui/button';
@@ -42,6 +46,7 @@ type AdjustStockFormProps = {
 
 export const AdjustStockForm = ({ productId }: AdjustStockFormProps) => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -76,6 +81,15 @@ export const AdjustStockForm = ({ productId }: AdjustStockFormProps) => {
       });
       queryClient.invalidateQueries({
         queryKey: inventoryControllerGetLowStockProductsQueryKey(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: inventoryControllerGetProductsQueryKey(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: productsControllerFindAllQueryKey(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: productsControllerFindAllAdminQueryKey(),
       });
       reset();
       toast.success('Stock adjusted');
@@ -155,9 +169,19 @@ export const AdjustStockForm = ({ productId }: AdjustStockFormProps) => {
             <Textarea id='reason' rows={3} {...register('reason')} />
           </FormField>
 
-          <Button type='submit' disabled={adjustMutation.isPending}>
-            {adjustMutation.isPending ? 'Adjusting...' : 'Adjust Stock'}
-          </Button>
+          <div className='flex justify-between'>
+            <Button type='submit' disabled={adjustMutation.isPending}>
+              {adjustMutation.isPending ? 'Adjusting...' : 'Adjust Stock'}
+            </Button>
+            <Button
+              type='button'
+              variant='outline'
+              disabled={adjustMutation.isPending}
+              onClick={() => navigate({ to: '/inventory' })}
+            >
+              Cancel
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>

@@ -3,8 +3,6 @@ import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { Trash2 } from 'lucide-react';
-
 import {
   categoriesControllerFindAllAdminOptions,
   productsControllerCreateMutation,
@@ -14,10 +12,14 @@ import {
   productsControllerUpdateMutation,
   productsControllerUploadImageMutation,
   productsControllerRemoveImageMutation,
+  productsControllerReorderImagesMutation,
 } from '@/api/generated/@tanstack/react-query.gen';
-import type { ProductDetailDto } from '@/api/generated/types.gen';
+import type {
+  ProductDetailDto,
+  ProductImageDto,
+} from '@/api/generated/types.gen';
 import { FormField } from '@/components/shared/form-field';
-import { ImageUpload } from '@/components/shared/image-upload';
+import { SortableImageGrid } from './sortable-image-grid';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -110,6 +112,9 @@ export const ProductForm = ({ product }: ProductFormProps) => {
   }, [nameValue, slugManuallyEdited, setValue]);
 
   const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
+  const [pendingImageOrder, setPendingImageOrder] = useState<string[] | null>(
+    null,
+  );
 
   const invalidateProducts = () => {
     queryClient.invalidateQueries({
@@ -150,10 +155,30 @@ export const ProductForm = ({ product }: ProductFormProps) => {
     },
   });
 
+  const reorderImagesMutation = useMutation({
+    ...productsControllerReorderImagesMutation(),
+    onSuccess: () => {
+      invalidateProducts();
+      if (product) {
+        queryClient.invalidateQueries({
+          queryKey: productsControllerFindBySlugQueryKey({
+            path: { slug: product.slug },
+          }),
+        });
+      }
+      toast.success('Image order updated');
+    },
+  });
+
+  const handleReorder = (imageIds: string[]) => {
+    setPendingImageOrder(imageIds.length > 0 ? imageIds : null);
+  };
+
   const isPending =
     createMutation.isPending ||
     updateMutation.isPending ||
-    uploadImageMutation.isPending;
+    uploadImageMutation.isPending ||
+    reorderImagesMutation.isPending;
 
   const onSubmit = async (values: ProductFormValues) => {
     const slugChanged = values.slug !== (product?.slug ?? '');
@@ -170,6 +195,13 @@ export const ProductForm = ({ product }: ProductFormProps) => {
           sku: values.sku || null,
         },
       });
+
+      if (pendingImageOrder) {
+        await reorderImagesMutation.mutateAsync({
+          path: { id: product.id },
+          body: { imageIds: pendingImageOrder },
+        });
+      }
 
       for (const file of newImageFiles) {
         await uploadImageMutation.mutateAsync({
@@ -194,6 +226,7 @@ export const ProductForm = ({ product }: ProductFormProps) => {
         isFeatured: updated.isFeatured,
       });
       setNewImageFiles([]);
+      setPendingImageOrder(null);
       setSlugManuallyEdited(false);
 
       if (updated.slug !== product.slug) {
@@ -365,59 +398,69 @@ export const ProductForm = ({ product }: ProductFormProps) => {
             </FormField>
           </div>
 
-          {product && product.images.length > 0 && (
-            <FormField label='Current Images' name='currentImages'>
-              <div className='flex flex-wrap gap-4'>
-                {product.images.map((image) => (
-                  <div key={image.id} className='relative'>
-                    <img
-                      src={image.url}
-                      alt={
-                        typeof image.alt === 'string' ? image.alt : product.name
-                      }
-                      className='h-20 w-20 rounded-md border object-cover sm:h-24 sm:w-24'
-                    />
-                    <Button
-                      type='button'
-                      variant='destructive'
-                      size='icon'
-                      className='absolute -top-2 -right-2 size-6'
-                      disabled={removeImageMutation.isPending}
-                      onClick={() =>
-                        removeImageMutation.mutate({
-                          path: { id: product.id, imageId: image.id },
-                        })
-                      }
-                    >
-                      <Trash2 className='size-3' />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </FormField>
-          )}
-
-          <FormField label='Add Images' name='newImage'>
-            <ImageUpload
-              value={newImageFiles}
-              onChange={(files) =>
-                setNewImageFiles(
-                  files.filter((f): f is File => f instanceof File),
-                )
+          <FormField label='Images' name='images'>
+            <SortableImageGrid
+              existingImages={
+                isEditing && product
+                  ? pendingImageOrder
+                    ? pendingImageOrder.reduce<ProductImageDto[]>((acc, id) => {
+                        const img = product.images.find((img) => img.id === id);
+                        if (img) acc.push(img);
+                        return acc;
+                      }, [])
+                    : product.images
+                  : []
               }
+              newFiles={newImageFiles}
+              onReorder={handleReorder}
+              onNewFilesReorder={setNewImageFiles}
+              onRemoveExisting={(imageId) => {
+                if (product) {
+                  removeImageMutation.mutate({
+                    path: { id: product.id, imageId },
+                  });
+                }
+                setPendingImageOrder((prev) => {
+                  if (!prev) return null;
+                  const filtered = prev.filter((id) => id !== imageId);
+                  return filtered.length > 0 ? filtered : null;
+                });
+              }}
+              onRemoveNew={(index) =>
+                setNewImageFiles((prev) => prev.filter((_, i) => i !== index))
+              }
+              onAddFiles={(files) =>
+                setNewImageFiles((prev) => [...prev, ...files])
+              }
+              disabled={isPending}
             />
           </FormField>
 
-          <Button
-            type='submit'
-            disabled={(!isDirty && newImageFiles.length === 0) || isPending}
-          >
-            {isPending
-              ? 'Saving...'
-              : isEditing
-                ? 'Save changes'
-                : 'Create product'}
-          </Button>
+          <div className='flex justify-between'>
+            <Button
+              type='submit'
+              disabled={
+                (!isDirty &&
+                  newImageFiles.length === 0 &&
+                  pendingImageOrder === null) ||
+                isPending
+              }
+            >
+              {isPending
+                ? 'Saving...'
+                : isEditing
+                  ? 'Save changes'
+                  : 'Create product'}
+            </Button>
+            <Button
+              type='button'
+              variant='outline'
+              disabled={isPending}
+              onClick={() => navigate({ to: '/products' })}
+            >
+              Cancel
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>

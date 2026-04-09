@@ -150,9 +150,22 @@ export const UserForm = ({ user }: UserFormProps) => {
             />
           </FormField>
 
-          <Button type='submit' disabled={!isDirty || updateMutation.isPending}>
-            {updateMutation.isPending ? 'Saving...' : 'Save changes'}
-          </Button>
+          <div className='flex justify-between'>
+            <Button
+              type='submit'
+              disabled={!isDirty || updateMutation.isPending}
+            >
+              {updateMutation.isPending ? 'Saving...' : 'Save changes'}
+            </Button>
+            <Button
+              type='button'
+              variant='outline'
+              disabled={updateMutation.isPending}
+              onClick={() => navigate({ to: '/users' })}
+            >
+              Cancel
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>

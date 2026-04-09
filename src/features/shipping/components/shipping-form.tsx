@@ -260,13 +260,23 @@ export const ShippingForm = ({ method }: ShippingFormProps) => {
             />
           </FormField>
 
-          <Button type='submit' disabled={!isDirty || isPending}>
-            {isPending
-              ? 'Saving...'
-              : isEditing
-                ? 'Save changes'
-                : 'Create shipping method'}
-          </Button>
+          <div className='flex justify-between'>
+            <Button type='submit' disabled={!isDirty || isPending}>
+              {isPending
+                ? 'Saving...'
+                : isEditing
+                  ? 'Save changes'
+                  : 'Create shipping method'}
+            </Button>
+            <Button
+              type='button'
+              variant='outline'
+              disabled={isPending}
+              onClick={() => navigate({ to: '/shipping' })}
+            >
+              Cancel
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>
