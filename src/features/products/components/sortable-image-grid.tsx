@@ -89,7 +89,13 @@ const SortableImage = ({
   disabled,
   onRemove,
 }: SortableImageProps) => {
-  const { ref } = useSortable({ id: item.id, index, disabled });
+  const { ref } = useSortable({
+    id: item.id,
+    index,
+    disabled,
+    type: item.type,
+    accept: [item.type],
+  });
 
   const src =
     item.type === 'existing' ? item.image.url : getOrCreatePreview(item.file);
@@ -154,14 +160,20 @@ const SortableImageGrid = ({
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const newFilesRef = useRef(newFiles);
+  const prevFilesRef = useRef(newFiles);
+
   useEffect(() => {
-    newFilesRef.current = newFiles;
+    const prevFiles = prevFilesRef.current;
+    const removedFiles = prevFiles.filter((f) => !newFiles.includes(f));
+    for (const file of removedFiles) {
+      revokePreview(file);
+    }
+    prevFilesRef.current = newFiles;
   }, [newFiles]);
 
   useEffect(() => {
     return () => {
-      for (const file of newFilesRef.current) {
+      for (const file of prevFilesRef.current) {
         revokePreview(file);
       }
     };

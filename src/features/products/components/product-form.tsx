@@ -171,7 +171,7 @@ export const ProductForm = ({ product }: ProductFormProps) => {
   });
 
   const handleReorder = (imageIds: string[]) => {
-    setPendingImageOrder(imageIds);
+    setPendingImageOrder(imageIds.length > 0 ? imageIds : null);
   };
 
   const isPending =
@@ -420,6 +420,11 @@ export const ProductForm = ({ product }: ProductFormProps) => {
                     path: { id: product.id, imageId },
                   });
                 }
+                setPendingImageOrder((prev) => {
+                  if (!prev) return null;
+                  const filtered = prev.filter((id) => id !== imageId);
+                  return filtered.length > 0 ? filtered : null;
+                });
               }}
               onRemoveNew={(index) =>
                 setNewImageFiles((prev) => prev.filter((_, i) => i !== index))
