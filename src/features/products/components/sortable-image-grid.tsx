@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DragDropProvider } from '@dnd-kit/react';
 import { useSortable, isSortable } from '@dnd-kit/react/sortable';
 import { GripVertical, Trash2, Upload, X } from 'lucide-react';
@@ -35,6 +35,14 @@ const getOrCreatePreview = (file: File): string => {
     previewCache.set(file, url);
   }
   return url;
+};
+
+const revokePreview = (file: File) => {
+  const url = previewCache.get(file);
+  if (url) {
+    URL.revokeObjectURL(url);
+    previewCache.delete(file);
+  }
 };
 
 let nextFileId = 0;
@@ -146,6 +154,19 @@ const SortableImageGrid = ({
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const newFilesRef = useRef(newFiles);
+  useEffect(() => {
+    newFilesRef.current = newFiles;
+  }, [newFiles]);
+
+  useEffect(() => {
+    return () => {
+      for (const file of newFilesRef.current) {
+        revokePreview(file);
+      }
+    };
+  }, []);
+
   const items = buildItems(existingImages, newFiles);
 
   const applyReorder = (initialIndex: number, index: number) => {
@@ -202,6 +223,7 @@ const SortableImageGrid = ({
     if (item.type === 'existing') {
       onRemoveExisting(item.image.id);
     } else {
+      revokePreview(item.file);
       const newIndex = index - existingImages.length;
       onRemoveNew(newIndex);
     }
