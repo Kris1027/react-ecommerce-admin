@@ -26,41 +26,47 @@ const ImageUpload = ({
 }: ImageUploadProps) => {
   const [error, setError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const cleanupRef = useRef<Map<File, string>>(new Map());
+
+  // Adjust preview state when value prop changes (React-endorsed render-time pattern)
+  const [prevValue, setPrevValue] = useState(value);
   const [filePreviews, setFilePreviews] = useState<Map<File, string>>(
     new Map(),
   );
-  const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    const files = value.filter((item): item is File => item instanceof File);
-    const newPreviews = new Map<File, string>();
+  if (value !== prevValue) {
+    setPrevValue(value);
 
-    for (const file of files) {
-      const existing = filePreviews.get(file);
-      if (existing) {
-        newPreviews.set(file, existing);
-      } else {
-        const url = URL.createObjectURL(file);
-        newPreviews.set(file, url);
+    const nextPreviews = new Map<File, string>();
+    for (const item of value) {
+      if (item instanceof File) {
+        const existing = filePreviews.get(item);
+        nextPreviews.set(item, existing ?? URL.createObjectURL(item));
       }
     }
 
-    // Revoke old URLs that are no longer needed
     for (const [file, url] of filePreviews) {
-      if (!newPreviews.has(file)) {
+      if (!nextPreviews.has(file)) {
         URL.revokeObjectURL(url);
       }
     }
 
-    setFilePreviews(newPreviews);
+    setFilePreviews(nextPreviews);
+  }
 
+  // Keep ref in sync for unmount cleanup (ref written in effect, not render)
+  useEffect(() => {
+    cleanupRef.current = filePreviews;
+  }, [filePreviews]);
+
+  useEffect(() => {
     return () => {
-      for (const url of newPreviews.values()) {
+      for (const url of cleanupRef.current.values()) {
         URL.revokeObjectURL(url);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only re-run when the value array identity changes
-  }, [value]);
+  }, []);
 
   const getPreviewSrc = (item: File | string): string | undefined => {
     if (typeof item === 'string') return item;
