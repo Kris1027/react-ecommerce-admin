@@ -402,13 +402,23 @@ export const CouponForm = ({ coupon }: CouponFormProps) => {
             />
           </FormField>
 
-          <Button type='submit' disabled={!isDirty || isPending}>
-            {isPending
-              ? 'Saving...'
-              : isEditing
-                ? 'Save changes'
-                : 'Create coupon'}
-          </Button>
+          <div className='flex justify-between'>
+            <Button type='submit' disabled={!isDirty || isPending}>
+              {isPending
+                ? 'Saving...'
+                : isEditing
+                  ? 'Save changes'
+                  : 'Create coupon'}
+            </Button>
+            <Button
+              type='button'
+              variant='outline'
+              disabled={isPending}
+              onClick={() => navigate({ to: '/coupons' })}
+            >
+              Cancel
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>

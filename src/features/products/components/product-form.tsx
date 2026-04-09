@@ -431,21 +431,31 @@ export const ProductForm = ({ product }: ProductFormProps) => {
             />
           </FormField>
 
-          <Button
-            type='submit'
-            disabled={
-              (!isDirty &&
-                newImageFiles.length === 0 &&
-                pendingImageOrder === null) ||
-              isPending
-            }
-          >
-            {isPending
-              ? 'Saving...'
-              : isEditing
-                ? 'Save changes'
-                : 'Create product'}
-          </Button>
+          <div className='flex justify-between'>
+            <Button
+              type='submit'
+              disabled={
+                (!isDirty &&
+                  newImageFiles.length === 0 &&
+                  pendingImageOrder === null) ||
+                isPending
+              }
+            >
+              {isPending
+                ? 'Saving...'
+                : isEditing
+                  ? 'Save changes'
+                  : 'Create product'}
+            </Button>
+            <Button
+              type='button'
+              variant='outline'
+              disabled={isPending}
+              onClick={() => navigate({ to: '/products' })}
+            >
+              Cancel
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>

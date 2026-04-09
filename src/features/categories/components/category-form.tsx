@@ -299,19 +299,29 @@ export const CategoryForm = ({ category }: CategoryFormProps) => {
             />
           </FormField>
 
-          <Button
-            type='submit'
-            disabled={
-              (!isDirty && !imageFiles.some((f) => f instanceof File)) ||
-              isPending
-            }
-          >
-            {isPending
-              ? 'Saving...'
-              : isEditing
-                ? 'Save changes'
-                : 'Create category'}
-          </Button>
+          <div className='flex justify-between'>
+            <Button
+              type='submit'
+              disabled={
+                (!isDirty && !imageFiles.some((f) => f instanceof File)) ||
+                isPending
+              }
+            >
+              {isPending
+                ? 'Saving...'
+                : isEditing
+                  ? 'Save changes'
+                  : 'Create category'}
+            </Button>
+            <Button
+              type='button'
+              variant='outline'
+              disabled={isPending}
+              onClick={() => navigate({ to: '/categories' })}
+            >
+              Cancel
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>
