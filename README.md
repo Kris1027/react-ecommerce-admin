@@ -87,7 +87,7 @@ A production-ready **admin dashboard** for the [NestJS Ecommerce API](https://gi
 
 ### Inventory Management
 
-- Low stock alerts dashboard
+- All products stock overview with low-stock filter toggle
 - Per-product stock detail — current, reserved, available, threshold
 - Stock adjustment form (adjustment, restock, return with reason)
 - Movement history audit trail
