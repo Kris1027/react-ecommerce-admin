@@ -6,9 +6,12 @@ import { z } from 'zod/v4';
 
 import {
   inventoryControllerAdjustStockMutation,
-  inventoryControllerGetStockQueryKey,
-  inventoryControllerGetMovementHistoryQueryKey,
   inventoryControllerGetLowStockProductsQueryKey,
+  inventoryControllerGetMovementHistoryQueryKey,
+  inventoryControllerGetProductsQueryKey,
+  inventoryControllerGetStockQueryKey,
+  productsControllerFindAllAdminQueryKey,
+  productsControllerFindAllQueryKey,
 } from '@/api/generated/@tanstack/react-query.gen';
 import { FormField } from '@/components/shared/form-field';
 import { Button } from '@/components/ui/button';
@@ -76,6 +79,15 @@ export const AdjustStockForm = ({ productId }: AdjustStockFormProps) => {
       });
       queryClient.invalidateQueries({
         queryKey: inventoryControllerGetLowStockProductsQueryKey(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: inventoryControllerGetProductsQueryKey(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: productsControllerFindAllQueryKey(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: productsControllerFindAllAdminQueryKey(),
       });
       reset();
       toast.success('Stock adjusted');
