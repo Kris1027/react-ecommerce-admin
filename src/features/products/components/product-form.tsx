@@ -109,7 +109,7 @@ export const ProductForm = ({ product }: ProductFormProps) => {
     }
   }, [nameValue, slugManuallyEdited, setValue]);
 
-  const [newImageFile, setNewImageFile] = useState<File | null>(null);
+  const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
 
   const invalidateProducts = () => {
     queryClient.invalidateQueries({
@@ -171,10 +171,10 @@ export const ProductForm = ({ product }: ProductFormProps) => {
         },
       });
 
-      if (newImageFile) {
+      for (const file of newImageFiles) {
         await uploadImageMutation.mutateAsync({
           path: { id: product.id },
-          body: { file: newImageFile },
+          body: { file },
         });
       }
 
@@ -193,7 +193,7 @@ export const ProductForm = ({ product }: ProductFormProps) => {
         isActive: updated.isActive,
         isFeatured: updated.isFeatured,
       });
-      setNewImageFile(null);
+      setNewImageFiles([]);
       setSlugManuallyEdited(false);
 
       if (updated.slug !== product.slug) {
@@ -217,10 +217,10 @@ export const ProductForm = ({ product }: ProductFormProps) => {
       };
       const result = await createMutation.mutateAsync({ body });
 
-      if (newImageFile) {
+      for (const file of newImageFiles) {
         await uploadImageMutation.mutateAsync({
           path: { id: result.data.id },
-          body: { file: newImageFile },
+          body: { file },
         });
       }
 
@@ -397,16 +397,20 @@ export const ProductForm = ({ product }: ProductFormProps) => {
             </FormField>
           )}
 
-          <FormField label='Add Image' name='newImage'>
+          <FormField label='Add Images' name='newImage'>
             <ImageUpload
-              value={newImageFile}
-              onChange={(file) => setNewImageFile(file)}
+              value={newImageFiles}
+              onChange={(files) =>
+                setNewImageFiles(
+                  files.filter((f): f is File => f instanceof File),
+                )
+              }
             />
           </FormField>
 
           <Button
             type='submit'
-            disabled={(!isDirty && !newImageFile) || isPending}
+            disabled={(!isDirty && newImageFiles.length === 0) || isPending}
           >
             {isPending
               ? 'Saving...'

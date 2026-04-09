@@ -98,9 +98,11 @@ export const CategoryForm = ({ category }: CategoryFormProps) => {
     }
   }, [nameValue, slugManuallyEdited, setValue]);
 
-  const [imageFile, setImageFile] = useState<File | null>(null);
   const existingImageUrl =
     typeof category?.imageUrl === 'string' ? category.imageUrl : null;
+  const [imageFiles, setImageFiles] = useState<Array<File | string>>(
+    existingImageUrl ? [existingImageUrl] : [],
+  );
 
   const invalidateCategories = () => {
     queryClient.invalidateQueries({
@@ -144,10 +146,10 @@ export const CategoryForm = ({ category }: CategoryFormProps) => {
         },
       });
 
-      if (imageFile) {
+      if (imageFiles[0] instanceof File) {
         await uploadImageMutation.mutateAsync({
           path: { id: category.id },
-          body: { file: imageFile },
+          body: { file: imageFiles[0] },
         });
       }
 
@@ -162,7 +164,9 @@ export const CategoryForm = ({ category }: CategoryFormProps) => {
         sortOrder: updated.sortOrder,
         isActive: updated.isActive,
       });
-      setImageFile(null);
+      const updatedImageUrl =
+        typeof updated.imageUrl === 'string' ? updated.imageUrl : null;
+      setImageFiles(updatedImageUrl ? [updatedImageUrl] : []);
       setSlugManuallyEdited(false);
 
       if (updated.slug !== category.slug) {
@@ -185,10 +189,10 @@ export const CategoryForm = ({ category }: CategoryFormProps) => {
       };
       const result = await createMutation.mutateAsync({ body });
 
-      if (imageFile) {
+      if (imageFiles[0] instanceof File) {
         await uploadImageMutation.mutateAsync({
           path: { id: result.data.id },
-          body: { file: imageFile },
+          body: { file: imageFiles[0] },
         });
       }
 
@@ -288,14 +292,18 @@ export const CategoryForm = ({ category }: CategoryFormProps) => {
 
           <FormField label='Image' name='image'>
             <ImageUpload
-              value={imageFile ?? existingImageUrl}
-              onChange={(file) => setImageFile(file)}
+              value={imageFiles}
+              onChange={setImageFiles}
+              maxFiles={1}
             />
           </FormField>
 
           <Button
             type='submit'
-            disabled={(!isDirty && !imageFile) || isPending}
+            disabled={
+              (!isDirty && !imageFiles.some((f) => f instanceof File)) ||
+              isPending
+            }
           >
             {isPending
               ? 'Saving...'

@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 type ImageUploadProps = {
-  value: File | string | null;
-  onChange: (file: File | null) => void;
-  onRemove?: () => void;
+  value: Array<File | string>;
+  onChange: (files: Array<File | string>) => void;
+  maxFiles?: number;
   accept?: string;
   maxSizeMB?: number;
   disabled?: boolean;
@@ -19,61 +19,94 @@ const DEFAULT_MAX_SIZE_MB = 5;
 const ImageUpload = ({
   value,
   onChange,
-  onRemove,
+  maxFiles,
   accept = DEFAULT_ACCEPT,
   maxSizeMB = DEFAULT_MAX_SIZE_MB,
   disabled = false,
 }: ImageUploadProps) => {
   const [error, setError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [filePreview, setFilePreview] = useState<string | null>(null);
+  const [filePreviews, setFilePreviews] = useState<Map<File, string>>(
+    new Map(),
+  );
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (!(value instanceof File)) {
-      return;
+    const files = value.filter((item): item is File => item instanceof File);
+    const newPreviews = new Map<File, string>();
+
+    for (const file of files) {
+      const existing = filePreviews.get(file);
+      if (existing) {
+        newPreviews.set(file, existing);
+      } else {
+        const url = URL.createObjectURL(file);
+        newPreviews.set(file, url);
+      }
     }
 
-    let cancelled = false;
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      if (!cancelled) {
-        setFilePreview(e.target?.result as string);
+    // Revoke old URLs that are no longer needed
+    for (const [file, url] of filePreviews) {
+      if (!newPreviews.has(file)) {
+        URL.revokeObjectURL(url);
       }
-    };
+    }
 
-    reader.readAsDataURL(value);
+    setFilePreviews(newPreviews);
 
     return () => {
-      cancelled = true;
-      reader.abort();
+      for (const url of newPreviews.values()) {
+        URL.revokeObjectURL(url);
+      }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only re-run when the value array identity changes
   }, [value]);
 
-  const preview =
-    value instanceof File
-      ? filePreview
-      : typeof value === 'string'
-        ? value
-        : null;
+  const getPreviewSrc = (item: File | string): string | undefined => {
+    if (typeof item === 'string') return item;
+    return filePreviews.get(item);
+  };
 
-  const validateAndSet = (file: File) => {
-    setError(null);
+  const canAddMore = !maxFiles || value.length < maxFiles;
 
+  const validateFile = (file: File): boolean => {
     const allowedTypes = accept.split(',').map((t) => t.trim());
     if (!allowedTypes.includes(file.type)) {
       setError(`File type must be one of: ${allowedTypes.join(', ')}`);
-      return;
+      return false;
     }
 
     const maxBytes = maxSizeMB * 1024 * 1024;
     if (file.size > maxBytes) {
       setError(`File size must be less than ${maxSizeMB}MB`);
-      return;
+      return false;
     }
 
-    onChange(file);
+    return true;
+  };
+
+  const addFiles = (files: FileList) => {
+    setError(null);
+    const remaining = maxFiles ? maxFiles - value.length : files.length;
+    const toAdd: File[] = [];
+
+    for (let i = 0; i < Math.min(files.length, remaining); i++) {
+      const file = files[i];
+      if (validateFile(file)) {
+        toAdd.push(file);
+      } else {
+        return;
+      }
+    }
+
+    if (toAdd.length > 0) {
+      onChange([...value, ...toAdd]);
+    }
+  };
+
+  const handleRemove = (index: number) => {
+    setError(null);
+    onChange(value.filter((_, i) => i !== index));
   };
 
   const handleClick = () => {
@@ -82,9 +115,8 @@ const ImageUpload = ({
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      validateAndSet(file);
+    if (e.target.files && e.target.files.length > 0) {
+      addFiles(e.target.files);
     }
     e.target.value = '';
   };
@@ -103,69 +135,73 @@ const ImageUpload = ({
     setIsDragging(false);
     if (disabled) return;
 
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      validateAndSet(file);
+    if (e.dataTransfer.files.length > 0) {
+      addFiles(e.dataTransfer.files);
     }
-  };
-
-  const handleRemove = () => {
-    onChange(null);
-    setError(null);
-    onRemove?.();
   };
 
   return (
     <div className='flex flex-col gap-2'>
-      {preview ? (
-        <div className='relative w-fit'>
-          <img
-            src={preview}
-            alt='Upload preview'
-            className='h-32 w-32 rounded-md border object-cover sm:h-40 sm:w-40'
-          />
-          {!disabled && (
-            <Button
-              type='button'
-              variant='destructive'
-              size='icon'
-              className='absolute -top-2 -right-2 size-6'
-              onClick={handleRemove}
+      <div className='flex flex-wrap gap-4'>
+        {value.map((item, index) => {
+          const src = getPreviewSrc(item);
+          return (
+            <div
+              key={`${typeof item === 'string' ? item : item.name}-${index}`}
+              className='relative'
             >
-              <X className='size-4' />
-            </Button>
-          )}
-        </div>
-      ) : (
-        <div
-          role='button'
-          tabIndex={0}
-          onClick={handleClick}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') handleClick();
-          }}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          className={cn(
-            'flex h-32 w-32 flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed transition-colors sm:h-40 sm:w-40',
-            isDragging
-              ? 'border-primary bg-primary/5'
-              : 'border-muted-foreground/25 hover:border-primary/50',
-            disabled && 'pointer-events-none opacity-50',
-          )}
-        >
-          <Upload className='text-muted-foreground size-8' />
-          <p className='text-muted-foreground text-xs'>
-            Click or drag to upload
-          </p>
-        </div>
-      )}
+              <img
+                src={src}
+                alt='Upload preview'
+                className='h-32 w-32 rounded-md border object-cover sm:h-40 sm:w-40'
+              />
+              {!disabled && (
+                <Button
+                  type='button'
+                  variant='destructive'
+                  size='icon'
+                  className='absolute -top-2 -right-2 size-6'
+                  onClick={() => handleRemove(index)}
+                >
+                  <X className='size-4' />
+                </Button>
+              )}
+            </div>
+          );
+        })}
+
+        {canAddMore && (
+          <div
+            role='button'
+            tabIndex={0}
+            onClick={handleClick}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') handleClick();
+            }}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={cn(
+              'flex h-32 w-32 flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed transition-colors sm:h-40 sm:w-40',
+              isDragging
+                ? 'border-primary bg-primary/5'
+                : 'border-muted-foreground/25 hover:border-primary/50',
+              disabled && 'pointer-events-none opacity-50',
+            )}
+          >
+            <Upload className='text-muted-foreground size-8' />
+            <p className='text-muted-foreground text-xs'>
+              Click or drag to upload
+            </p>
+          </div>
+        )}
+      </div>
 
       <input
         ref={inputRef}
         type='file'
         accept={accept}
+        multiple={!maxFiles || maxFiles > 1}
         onChange={handleFileChange}
         className='hidden'
       />
