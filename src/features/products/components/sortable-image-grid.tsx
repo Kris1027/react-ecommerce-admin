@@ -37,6 +37,18 @@ const getOrCreatePreview = (file: File): string => {
   return url;
 };
 
+let nextFileId = 0;
+const fileIdCache = new WeakMap<File, string>();
+
+const getFileId = (file: File): string => {
+  let id = fileIdCache.get(file);
+  if (!id) {
+    id = `new-${nextFileId++}`;
+    fileIdCache.set(file, id);
+  }
+  return id;
+};
+
 const buildItems = (
   existingImages: ProductImageDto[],
   newFiles: File[],
@@ -46,8 +58,8 @@ const buildItems = (
     type: 'existing',
     image,
   }));
-  const newItems: ImageItem[] = newFiles.map((file, i) => ({
-    id: `new-${i}`,
+  const newItems: ImageItem[] = newFiles.map((file) => ({
+    id: getFileId(file),
     type: 'new',
     file,
   }));

@@ -19,7 +19,6 @@ import type {
   ProductImageDto,
 } from '@/api/generated/types.gen';
 import { FormField } from '@/components/shared/form-field';
-import { ImageUpload } from '@/components/shared/image-upload';
 import { SortableImageGrid } from './sortable-image-grid';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -399,47 +398,38 @@ export const ProductForm = ({ product }: ProductFormProps) => {
             </FormField>
           </div>
 
-          {isEditing && product ? (
-            <FormField label='Images' name='images'>
-              <SortableImageGrid
-                existingImages={
-                  pendingImageOrder
+          <FormField label='Images' name='images'>
+            <SortableImageGrid
+              existingImages={
+                isEditing && product
+                  ? pendingImageOrder
                     ? pendingImageOrder.reduce<ProductImageDto[]>((acc, id) => {
                         const img = product.images.find((img) => img.id === id);
                         if (img) acc.push(img);
                         return acc;
                       }, [])
                     : product.images
-                }
-                newFiles={newImageFiles}
-                onReorder={handleReorder}
-                onNewFilesReorder={setNewImageFiles}
-                onRemoveExisting={(imageId) =>
+                  : []
+              }
+              newFiles={newImageFiles}
+              onReorder={handleReorder}
+              onNewFilesReorder={setNewImageFiles}
+              onRemoveExisting={(imageId) => {
+                if (product) {
                   removeImageMutation.mutate({
                     path: { id: product.id, imageId },
-                  })
+                  });
                 }
-                onRemoveNew={(index) =>
-                  setNewImageFiles((prev) => prev.filter((_, i) => i !== index))
-                }
-                onAddFiles={(files) =>
-                  setNewImageFiles((prev) => [...prev, ...files])
-                }
-                disabled={isPending}
-              />
-            </FormField>
-          ) : (
-            <FormField label='Add Images' name='newImage'>
-              <ImageUpload
-                value={newImageFiles}
-                onChange={(files) =>
-                  setNewImageFiles(
-                    files.filter((f): f is File => f instanceof File),
-                  )
-                }
-              />
-            </FormField>
-          )}
+              }}
+              onRemoveNew={(index) =>
+                setNewImageFiles((prev) => prev.filter((_, i) => i !== index))
+              }
+              onAddFiles={(files) =>
+                setNewImageFiles((prev) => [...prev, ...files])
+              }
+              disabled={isPending}
+            />
+          </FormField>
 
           <Button
             type='submit'
