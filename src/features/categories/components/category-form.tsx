@@ -295,6 +295,7 @@ export const CategoryForm = ({ category }: CategoryFormProps) => {
               value={imageFiles}
               onChange={setImageFiles}
               maxFiles={1}
+              allowRemoveUrl={false}
             />
           </FormField>
 

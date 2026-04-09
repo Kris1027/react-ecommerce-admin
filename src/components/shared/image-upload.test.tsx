@@ -84,7 +84,9 @@ describe('ImageUpload', () => {
       />,
     );
 
-    const removeButton = screen.getByRole('button');
+    const removeButton = screen.getByRole('button', {
+      name: 'Remove image 1',
+    });
     await user.click(removeButton);
 
     expect(onChange).toHaveBeenCalledWith([]);
@@ -97,6 +99,18 @@ describe('ImageUpload', () => {
         onChange={vi.fn()}
         maxFiles={1}
         disabled
+      />,
+    );
+    expect(screen.queryByRole('button')).toBeNull();
+  });
+
+  it('should not show remove button for URLs when allowRemoveUrl is false', () => {
+    render(
+      <ImageUpload
+        value={['https://example.com/image.jpg']}
+        onChange={vi.fn()}
+        maxFiles={1}
+        allowRemoveUrl={false}
       />,
     );
     expect(screen.queryByRole('button')).toBeNull();

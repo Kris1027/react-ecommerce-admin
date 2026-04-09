@@ -11,10 +11,31 @@ type ImageUploadProps = {
   accept?: string;
   maxSizeMB?: number;
   disabled?: boolean;
+  allowRemoveUrl?: boolean;
 };
 
 const DEFAULT_ACCEPT = 'image/jpeg,image/png,image/webp';
 const DEFAULT_MAX_SIZE_MB = 5;
+
+// Module-level cache: File → object URL. WeakMap allows GC when File is dereferenced.
+const previewCache = new WeakMap<File, string>();
+
+const getOrCreatePreview = (file: File): string => {
+  let url = previewCache.get(file);
+  if (!url) {
+    url = URL.createObjectURL(file);
+    previewCache.set(file, url);
+  }
+  return url;
+};
+
+const revokePreview = (file: File) => {
+  const url = previewCache.get(file);
+  if (url) {
+    URL.revokeObjectURL(url);
+    previewCache.delete(file);
+  }
+};
 
 const ImageUpload = ({
   value,
@@ -23,54 +44,31 @@ const ImageUpload = ({
   accept = DEFAULT_ACCEPT,
   maxSizeMB = DEFAULT_MAX_SIZE_MB,
   disabled = false,
+  allowRemoveUrl = true,
 }: ImageUploadProps) => {
   const [error, setError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const cleanupRef = useRef<Map<File, string>>(new Map());
 
-  // Adjust preview state when value prop changes (React-endorsed render-time pattern)
-  const [prevValue, setPrevValue] = useState(value);
-  const [filePreviews, setFilePreviews] = useState<Map<File, string>>(
-    new Map(),
-  );
-
-  if (value !== prevValue) {
-    setPrevValue(value);
-
-    const nextPreviews = new Map<File, string>();
-    for (const item of value) {
-      if (item instanceof File) {
-        const existing = filePreviews.get(item);
-        nextPreviews.set(item, existing ?? URL.createObjectURL(item));
-      }
-    }
-
-    for (const [file, url] of filePreviews) {
-      if (!nextPreviews.has(file)) {
-        URL.revokeObjectURL(url);
-      }
-    }
-
-    setFilePreviews(nextPreviews);
-  }
-
-  // Keep ref in sync for unmount cleanup (ref written in effect, not render)
+  // Track current value for unmount cleanup (ref written only in effects)
+  const valueRef = useRef(value);
   useEffect(() => {
-    cleanupRef.current = filePreviews;
-  }, [filePreviews]);
+    valueRef.current = value;
+  }, [value]);
 
   useEffect(() => {
     return () => {
-      for (const url of cleanupRef.current.values()) {
-        URL.revokeObjectURL(url);
+      for (const item of valueRef.current) {
+        if (item instanceof File) {
+          revokePreview(item);
+        }
       }
     };
   }, []);
 
-  const getPreviewSrc = (item: File | string): string | undefined => {
+  const getPreviewSrc = (item: File | string): string => {
     if (typeof item === 'string') return item;
-    return filePreviews.get(item);
+    return getOrCreatePreview(item);
   };
 
   const canAddMore = !maxFiles || value.length < maxFiles;
@@ -112,6 +110,10 @@ const ImageUpload = ({
 
   const handleRemove = (index: number) => {
     setError(null);
+    const item = value[index];
+    if (item instanceof File) {
+      revokePreview(item);
+    }
     onChange(value.filter((_, i) => i !== index));
   };
 
@@ -146,6 +148,11 @@ const ImageUpload = ({
     }
   };
 
+  const canRemoveItem = (item: File | string): boolean => {
+    if (typeof item === 'string') return allowRemoveUrl;
+    return true;
+  };
+
   return (
     <div className='flex flex-col gap-2'>
       <div className='flex flex-wrap gap-4'>
@@ -161,12 +168,13 @@ const ImageUpload = ({
                 alt='Upload preview'
                 className='h-32 w-32 rounded-md border object-cover sm:h-40 sm:w-40'
               />
-              {!disabled && (
+              {!disabled && canRemoveItem(item) && (
                 <Button
                   type='button'
                   variant='destructive'
                   size='icon'
                   className='absolute -top-2 -right-2 size-6'
+                  aria-label={`Remove image ${index + 1}`}
                   onClick={() => handleRemove(index)}
                 >
                   <X className='size-4' />
